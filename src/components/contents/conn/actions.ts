@@ -5,7 +5,7 @@ export const connectNode = (addr:string, port: number, token: string) => async (
         const res = await fetch(`http://${addr}:${port}/$jade$/debug/configurations`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
-            mode: 'no-cors',
+            // mode: 'no-cors',
             // cache: 'no-cache',
         })
 
