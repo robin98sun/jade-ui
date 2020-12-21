@@ -7,7 +7,11 @@ const initState = {
 const connReducer = (state: any = initState, action: any) => {
     switch (action.type) {
     case 'CONNECT_NODE':
-        return Object.assign({}, state, action.data)
+        return Object.assign({}, state, {
+            addr: action.data.addr,
+            port: action.data.port,
+            token: action.data.token,
+        })
     default:
         return state
         // break

@@ -22,7 +22,7 @@ export const connectNode = (addr:string, port: number, token: string) => async (
         })
 
     } catch (e) {
-        console.log(`Error when connecting to ${addr}:${port} using token ${token}:`, e)
+        console.log('Error:', e)
     } finally {
         
     }
