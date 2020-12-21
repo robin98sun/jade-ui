@@ -28,6 +28,11 @@ class ContentConf extends Component<Props>{
     }, this.props.style)
     return (
       <div className="content-conf" style={confStyle}>
+      {
+        this.props.config 
+        ? JSON.stringify(this.props.config, null, 4)
+        : null
+      }
       </div>
     )
   }
