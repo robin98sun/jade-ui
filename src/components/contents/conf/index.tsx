@@ -10,26 +10,15 @@ import {
 
 
 interface Props {
-  // contentName?: string
+  config?: object
   style?: any
-  addr?: string
-  port?: number
-  token?: string
-}
-
-interface State {
-  addr?: string
-  port?: number
-  token?: string
 }
 
 
-class ContentConf extends Component<Props, State>{
+class ContentConf extends Component<Props>{
 
   constructor(props:any) {
     super(props)
-    this.state = {
-    }
   }
 
   render() {
@@ -40,7 +29,7 @@ class ContentConf extends Component<Props, State>{
     return (
       <div className="content-conf" style={confStyle}>
       </div>
-    );
+    )
   }
 }
 

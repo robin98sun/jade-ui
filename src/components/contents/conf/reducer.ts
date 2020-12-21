@@ -14,4 +14,4 @@ const confReducer = (state: any = initState, action: any) => {
     }
 }
 
-export default connReducer
+export default confReducer
