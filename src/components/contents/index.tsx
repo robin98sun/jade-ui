@@ -1,10 +1,12 @@
+
 import React from 'react';
 import { Component } from 'react'
 import { connect } from 'react-redux'
 
 import ContentIntro from './intro'
 import ContentConn from './conn'
-
+import ContentConf from './conf'
+import ContentTopo from './topo'
 
 interface Props {
   contentName?: string
@@ -23,6 +25,10 @@ class Contents extends Component<Props>{
       return <ContentIntro />
     case 'conn' :
       return <ContentConn />
+    case 'conf' :
+      return <ContentConf />
+    case 'topo' :
+      return <ContentTopo />
     default:
       return null
     }

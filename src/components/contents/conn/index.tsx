@@ -7,12 +7,15 @@ import {
   Button,
 } from '@material-ui/core'
 
+
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 
 import {
-  connectNode
+  connectNode,
+  hasShownError,
 } from './actions'
 
+import Modal from '../../gears/modal'
 
 interface Props {
   // contentName?: string
@@ -20,7 +23,11 @@ interface Props {
   addr?: string
   port?: number
   token?: string
-  connectNode?(addr:string, port:number, token: string):any
+  error?: any
+  errTime?: any
+  connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
+  hasShownError?(errTime: any):any
+  hasShownErrTime?:any
 }
 
 interface State {
@@ -58,6 +65,7 @@ class ContentConn extends Component<Props, State>{
       tmpState.token = props.token
     }
     tmpState.loadedPreviousAddr = true
+
     return tmpState
   }
 
@@ -100,7 +108,13 @@ class ContentConn extends Component<Props, State>{
 
   onConnect() {
     if (this.props.connectNode) {
-      this.props.connectNode(this.state.addr!, this.state.port!, this.state.token!)
+      this.props.connectNode(this.state.addr!, this.state.port!, this.state.token!, 'conf', false)
+    }
+  }
+
+  onConfirmError() {
+    if (this.props.hasShownError) {
+      this.props.hasShownError(this.props.errTime)
     }
   }
 
@@ -111,6 +125,14 @@ class ContentConn extends Component<Props, State>{
     }, this.props.style)
     return (
       <div className="content-connection" style={connStyle}>
+        <Modal
+          open={(this.props.errTime && this.props.errTime !== this.props.hasShownErrTime)||false}
+          onClose={this.onConfirmError.bind(this)}
+          title="ERROR"
+          message={this.props.error}
+          style={{}}
+        />
+
         <Grid container spacing={3}>
           <Grid item lg={9} md={9} xs={12}>
             <TextField
@@ -180,5 +202,5 @@ class ContentConn extends Component<Props, State>{
 
 export default connect(
   (state: any)=>state.app.content.conn||{},
-  {connectNode},
+  {connectNode, hasShownError},
 )(ContentConn);

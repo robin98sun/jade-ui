@@ -24,7 +24,7 @@ const appReducer = (state: any = initState, action: any) => {
     switch (action.type) {
     case 'TOGGLE_DRAWER_MENU':
         appState = Object.assign({}, state, {
-            drawMenuOpen: !state.drawMenuOpen,
+            drawMenuOpen: action.data,
         })
         break
     case 'SWITCH_CONTENT':

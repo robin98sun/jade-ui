@@ -1,6 +1,9 @@
 export const contentItems: {[key:string]:string}[] = [
     {
-
+        conf: 'Node Configurations',
+    },
+    {
+        topo: 'Topology',
     },
     {
         conn: 'Connection',

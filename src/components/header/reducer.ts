@@ -1,4 +1,8 @@
-const headerReducer = (state: any = {}, action: any) => {
+const initState : any = {
+
+}
+
+const headerReducer = (state: any = initState, action: any) => {
     switch (action.type) {
     case 'TITLE':
         return Object.assign({}, state,{

@@ -6,7 +6,7 @@ const drawerReducer = (state: any = initState, action: any) => {
     switch (action.type) {
     case 'TOGGLE_DRAWER_MENU':
         return Object.assign({}, state,{
-            open: !state.open,
+            open: action.data,
         })
         // break
     default:

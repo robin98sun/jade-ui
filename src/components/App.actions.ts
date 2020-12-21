@@ -40,3 +40,6 @@ export const welcome = () => async (dispatch:any) => {
     })
 }
 
+export const openDrawMenu = (open: boolean) => {
+    
+}

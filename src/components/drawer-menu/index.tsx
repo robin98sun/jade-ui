@@ -3,7 +3,7 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import { 
   Toolbar,
-  // Drawer,
+  Typography,
   List,
   ListItem,
   ListItemIcon,
@@ -12,7 +12,7 @@ import {
   SwipeableDrawer,
 } from '@material-ui/core'
 
-import { onClickDrawerItem } from './actions'
+import { switchContent } from './actions'
 
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
   showClear?: boolean
   style?: object
   open?: boolean
-  onClickDrawerItem?(item:string):void
+  switchContent?(item:string):void
   itemLists?: {
     icon: any
     text: string
@@ -118,14 +118,25 @@ class DrawerMenu extends Component<Props, State>{
                   itemlist.map((item, j) => (
                     <ListItem button key={item.text+'_'+i+'_'+j} 
                       onClick={()=>{
-                        if (this.props.onClickDrawerItem) {
-                          this.props.onClickDrawerItem(item.name)
+                        if (this.props.switchContent) {
+                          this.props.switchContent(item.name)
                         }
                       }}
                       color={item.color}
                     >
                       <ListItemIcon>{item.icon}</ListItemIcon>
-                      <ListItemText primary={item.text} color={item.color}/>
+                      <ListItemText primary={
+                        <Typography 
+                          display='inline'
+                          noWrap
+                          color={item.color}
+                          style={{
+                            textDecoration: item.color === 'primary' ? 'underline': 'none'
+                          }}
+                        >
+                          {item.text}
+                        </Typography>
+                      } color={item.color}/>
                     </ListItem>
                   ))
                 }
@@ -147,5 +158,5 @@ class DrawerMenu extends Component<Props, State>{
 
 export default connect(
   (state: any)=>state.app.drawer||{},
-  {onClickDrawerItem},
+  {switchContent},
 )(DrawerMenu);

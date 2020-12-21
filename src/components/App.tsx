@@ -16,6 +16,8 @@ import {
 import {
   SettingsEthernet as SettingsEthernetIcon,
   Info as InfoIcon,
+  Settings as SettingsIcon,
+  OpenWith as OpenWithIcon,
 } from '@material-ui/icons'
 
 
@@ -26,13 +28,24 @@ import Header from './header'
 import DrawerMenu from './drawer-menu'
 import Contents from './contents'
 
+import { connectNode } from './contents/conn/actions'
+
 import { contentItems } from './content.items'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { lightBlue, blueGrey } from '@material-ui/core/colors'
+import { blue, cyan, blueGrey, red, amber, green, grey } from '@material-ui/core/colors'
 const defaultTheme = createMuiTheme({
   palette: {
-    primary: lightBlue,
+    primary: blue,
     secondary: blueGrey,
+    error: red,
+    warning: amber,
+    info: cyan,
+    success: green,
+    text: {
+      primary: grey[900],
+      secondary: grey[600],
+      disabled: grey[300],
+    }
   }
 })
 
@@ -40,6 +53,7 @@ interface AppProps {
   welcome?(): any
   drawMenuOpen?: boolean
   contentName?: string
+  connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
 }
 
 interface State {
@@ -69,6 +83,9 @@ class App extends Component<AppProps, State>{
   }
   componentDidMount() {
     this.props.welcome!()
+    if (this.props.connectNode) {
+      this.props.connectNode('', 0, '', 'conf', true)
+    }
   }
 
   getDrawMenuItems() {
@@ -84,6 +101,12 @@ class App extends Component<AppProps, State>{
         case 'intro':
           icon = <InfoIcon color={color}/>
           break
+        case 'conf':
+          icon = <SettingsIcon color={color}/>
+          break
+        case 'topo':
+          icon = <OpenWithIcon color={color}/>
+          break  
         default:
           icon = null
           break
@@ -98,10 +121,8 @@ class App extends Component<AppProps, State>{
     ))
   }
 
-
-
   render() {
-    const headerHeight = 50
+    const headerHeight = 40
     return (
       <React.Fragment>
       <div className="App" style={{
@@ -114,7 +135,6 @@ class App extends Component<AppProps, State>{
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            // padding: '10px 0px',
             // necessary for content to be below app bar
             justifyContent: 'flex-start',
             height: headerHeight,
@@ -130,7 +150,5 @@ class App extends Component<AppProps, State>{
 
 export default connect(
   (state:any)=>state.app,
-  {
-    welcome,
-  },
+  {welcome, connectNode},
 )(App);

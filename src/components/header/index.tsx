@@ -23,10 +23,25 @@ interface Props {
   toggleDrawerMenu?: any
 }
 
+interface State {
+  drawMenuOpen?: boolean
+}
 
-class Header extends Component<Props>{
+class Header extends Component<Props, State>{
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      drawMenuOpen: true
+    }
+  }
   componentDidMount() {
-
+    this.props.toggleDrawerMenu(this.state.drawMenuOpen)
+  }
+  toggleDrawerMenu() {
+    this.props.toggleDrawerMenu(!this.state.drawMenuOpen)
+    this.setState({
+      drawMenuOpen: !this.state.drawMenuOpen,
+    })
   }
   render() {
     const barStyle = Object.assign({}, {bottom:'auto', top: 0, flex: 1, justifyContent: 'center'}, this.props.style)
@@ -34,7 +49,7 @@ class Header extends Component<Props>{
       <div className="header">
         <AppBar position="fixed" style={barStyle}>
           <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={this.props.toggleDrawerMenu}>
+            <IconButton edge="start" color="inherit" aria-label="menu" onClick={this.toggleDrawerMenu.bind(this)}>
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" style={{margin: 'auto'}}>
