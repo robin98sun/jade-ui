@@ -33,6 +33,7 @@ interface TreeNodeItemProps {
   level: number
   id: number
   spacing?: number
+  onClick?(node: TreeNode):any
 }
 
 interface TreeNodeItemState {
@@ -58,7 +59,13 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
     })
   }
 
-  onClickNode(e: any) {
+  onClickNode(node: TreeNode) {
+    if (this.props.onClick) {
+      this.props.onClick(node)
+    } 
+  }
+
+  onToggleFold(e: any) {
     this.setState({
       unfolded: !this.state.unfolded,
       hasLocalSettings: true,
@@ -74,13 +81,16 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
       <div 
         style={{
           marginLeft: this.props.level*indentSpacing,
-          marginTop: 5+(this.props.spacing||0),
+          marginTop: (this.props.spacing||0),
         }}
         key={`tree-node-[${this.props.level}][${this.props.id}]`}
       >
         <Grid container alignItems="center">
-          <Grid item xs={1} style={{textAlign: "center", marginTop: 2}}>
-          <IconButton onClick={this.onClickNode.bind(this)}>
+          <Grid item xs={1} style={{textAlign: "center", marginTop: 0}}>
+          <IconButton 
+            onClick={this.onToggleFold.bind(this)} 
+            disabled={!this.props.node.subnodes || Object.keys(this.props.node.subnodes).length===0}
+          >
           {
             this.props.node.subnodes && Object.keys(this.props.node.subnodes) && this.state.unfolded
             ? <IndeterminateCheckBoxOutlinedIcon color="primary"/>
@@ -92,7 +102,7 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
           </Grid>
           <Grid item xs style={{textAlign: "left"}}>
             <Typography variant="body1">
-              <Link component="button" variant="body1" onClick={this.onClickNode.bind(this)}>
+              <Link component="button" variant="body1" onClick={this.onClickNode.bind(this, this.props.node)}>
               {this.props.node.name}
               </Link>
             </Typography>
@@ -132,7 +142,7 @@ class TreeView extends Component<Props>{
       <div className="tree-view" style={treeStyle}>
       {
         this.props.root 
-        ? <TreeViewItem node={this.props.root} level={0} id={0} />
+        ? <TreeViewItem node={this.props.root} level={0} id={0} spacing={this.props.spacing||0}/>
         : null
       }
       </div>
