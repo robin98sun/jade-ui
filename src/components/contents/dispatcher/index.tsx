@@ -19,7 +19,7 @@ interface Props {
 }
 
 
-class ContentIntro extends Component<Props>{
+class ContentDispatcher extends Component<Props>{
   componentDidMount() {
 
   }
@@ -28,14 +28,14 @@ class ContentIntro extends Component<Props>{
     return (
       <div className="content-intro" style={introStyle}>
         <Typography paragraph>
-           Under construction...   
-        </Typography>
+            Under construction...
+          </Typography>
       </div>
     );
   }
 }
 
 export default connect(
-  (state: any)=>state.app.content.intro||{},
+  (state: any)=>state.app.content.distpatcher||{},
   null,
-)(ContentIntro);
+)(ContentDispatcher);

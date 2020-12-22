@@ -23,7 +23,7 @@ interface Props {
   progressIcon?:any
 }
 
-class CustomModal extends Component<Props>{
+class ModalStatus extends Component<Props>{
 
     render() {
         return (
@@ -77,7 +77,7 @@ class CustomModal extends Component<Props>{
                         {this.props.title}
                       </h2>
                     : this.props.progressIcon 
-                    ? <Grid container alignItems="center" style={{marginTop:-30, marginBottom: 10}}> 
+                    ? <Grid container alignItems="center" style={{marginTop: 20, marginBottom: 10}}> 
                         <Grid item xs style={{textAlign: "center"}}>
                         {
                           this.props.progressIcon
@@ -100,4 +100,4 @@ class CustomModal extends Component<Props>{
     }
 }
 
-export default CustomModal
+export default ModalStatus

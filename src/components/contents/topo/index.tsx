@@ -2,28 +2,33 @@ import React from 'react';
 import { Component } from 'react'
 import { connect } from 'react-redux'
 
-import Modal from '../../gears/modal'
+import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
-import TreeView from '../../gears/tree-view'
+import TreeView, {TreeNode} from '../../gears/tree-view'
+import NodeEditor from './node-editor'
 
-import { getTopology, hasShownError } from './actions'
-
+import { 
+  getTopology, 
+  hasShownErrorOfGetTopology, 
+  showEditorForNode,
+  fetchNodeConfig,
+} from './actions'
+import { Message } from './reducer'
 
 interface Props {
   style?: any
   getTopology?(addr: string, port: number, token: string):any
-  hasShownError?(errTime: any):any
+  hasShownErrorOfGetTopology?(errTime: any):any
+  fetchNodeConfig?(node: TreeNode):any
+  showEditorForNode?(node: TreeNode):any
   currentNode?: {
     addr?: string,
     port?: number,
     token?: string,
     config?: any,
   },
-  topology?: any,
-  isGettingSubnodes?: boolean,
-  hasShownErrTime?: any,
-  errTime?: any,
-  error?: any,
+  topology?: Message,
+  isShowingEditor?:boolean
 }
 
 class ContentTopo extends Component<Props>{
@@ -38,8 +43,17 @@ class ContentTopo extends Component<Props>{
   }
 
   dismissErrorMsg() {
-    if (this.props.hasShownError) {
-      this.props.hasShownError(this.props.errTime)
+    if (this.props.hasShownErrorOfGetTopology && this.props.topology) {
+      this.props.hasShownErrorOfGetTopology(this.props.topology.errTime)
+    }
+  }
+
+  onClickNode(node: TreeNode) {
+    if (this.props.fetchNodeConfig) {
+      this.props.fetchNodeConfig(node)
+      if (this.props.showEditorForNode) {
+        this.props.showEditorForNode(node)
+      }
     }
   }
 
@@ -47,21 +61,26 @@ class ContentTopo extends Component<Props>{
     const introStyle = Object.assign({}, {}, this.props.style)
     return (
       <div className="content-topology" style={introStyle}>
-        <Modal 
-          open={this.props.isGettingSubnodes||false}
+        <ModalStatus 
+          open={(this.props.topology && this.props.topology.isFetching) ||false}
           message="getting topology ..."
           progressIcon={<ProgressIcon isRunning />}
         />
 
-        <Modal 
-          open={(this.props.errTime && this.props.errTime !== this.props.hasShownErrTime)||false}
+        <ModalStatus 
+          open={(this.props.topology && this.props.topology.errTime && this.props.topology.errTime !== this.props.topology.hasShownErrTime)||false}
           title="ERROR"
-          message={this.props.error}
+          message={this.props.topology ? this.props.topology.error:''}
           onClose={this.dismissErrorMsg.bind(this)}
         />
 
         <TreeView 
-          root={this.props.topology}
+          root={this.props.topology?this.props.topology.data:null}
+          onClick={this.onClickNode.bind(this)}
+        />
+
+        <NodeEditor
+          open={this.props.isShowingEditor||false}
         />
       </div>
     );
@@ -70,5 +89,8 @@ class ContentTopo extends Component<Props>{
 
 export default connect(
   (state: any)=>state.app.content.topo||{},
-  { getTopology, hasShownError },
+  { 
+    getTopology, hasShownErrorOfGetTopology, 
+    fetchNodeConfig, showEditorForNode, 
+  },
 )(ContentTopo);

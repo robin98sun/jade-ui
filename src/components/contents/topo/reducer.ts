@@ -1,16 +1,35 @@
+import { combineReducers } from 'redux'
+
+import {nodeEditorReducer} from './node-editor/reducer'
+
+
+const subReducerSchema = {
+    editor: nodeEditorReducer,
+}
+const subReducers = combineReducers(subReducerSchema)
+
+export interface Message {
+    data?: any
+    isFetching?: boolean
+    dataTime?: number
+    hasShownDataTime?: number
+    error?: string
+    errTime?: number
+    hasShownErrTime?: number
+}
+
 const initState = {
     currentNode: null,
     topology: null,
-    isGettingSubnodes: false,
-    hasShownErrTime: 0,
-    errTime: 0,
-    error: null,
+    isShowingEditor: false,
 }
 
 const topoReducer = (state: any = initState, action: any) => {
+    let thisState: any = null
+    let topoState: Message|null = null
     switch (action.type) {
     case 'CONNECT_NODE':
-        return Object.assign({}, state, {
+        thisState = Object.assign({}, state, {
             currentNode: {
                 addr: action.data.addr,
                 port: action.data.port,
@@ -18,29 +37,69 @@ const topoReducer = (state: any = initState, action: any) => {
                 config: action.data.config,
             }
         })
+        break
     case 'GET_TOPOLOGY_BEGIN':
-        return Object.assign({}, state, {
-            isGettingSubnodes: true,
+        topoState = Object.assign({}, state.topology, {
+            isFetching: true,
         })
+        thisState = Object.assign({}, state, {
+            topology: topoState,
+        })
+        break
     case 'GET_TOPOLOGY_FAILED':
-        return Object.assign({}, state, {
-            isGettingSubnodes: false,
+        topoState = Object.assign({}, state.topology, {
+            isFetching: false,
             errTime: Date.now(),
             error: action.data,
         })
+        thisState = Object.assign({}, state, {
+            topology: topoState,
+        })
+        break
     case 'GET_TOPOLOGY_ERROR_HAS_SHOWN':
-        return Object.assign({}, state, {
+        topoState = Object.assign({}, state.topology, {
             hasShownErrTime: action.data,
         })
-    case 'GET_TOPOLOGY_SUCCEEDED':
-        return Object.assign({}, state, {
-            topology: action.data,
-            isGettingSubnodes: false,
+        thisState = Object.assign({}, state, {
+            topology: topoState,
         })
+        break
+    case 'GET_TOPOLOGY_SUCCEEDED':
+        topoState = Object.assign({}, state.topology, {
+            data: action.data,
+            isFetching: false,
+        })
+        thisState = Object.assign({}, state, {
+            topology: topoState,
+        })
+        break
+    case 'SHOW_NODE_EDITOR': 
+        thisState = Object.assign({}, state, {
+            isShowingEditor: true,
+        })
+        break
+    case 'CLOSE_NODE_EDITOR':
+        thisState = Object.assign({}, state, {
+            isShowingEditor: false,
+        })
+        break
     default:
-        return state
-        // break
+        thisState = state
+        break
     }
+    // calculate sub reducers
+    let tmpState:any = {}
+    
+    // remove properties of current layer
+    for (let prop of Object.keys(subReducerSchema)) {
+        if (state[prop] !== undefined) {
+            tmpState[prop] = state[prop]
+        }
+    }
+
+    const subState = subReducers(tmpState, action)
+    // return merged state
+    return Object.assign({}, thisState, subState)
 }
 
 export default topoReducer

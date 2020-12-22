@@ -31,7 +31,7 @@ class Header extends Component<Props, State>{
   constructor(props: Props) {
     super(props)
     this.state = {
-      drawMenuOpen: true
+      drawMenuOpen: window.innerWidth > 400,
     }
   }
   componentDidMount() {

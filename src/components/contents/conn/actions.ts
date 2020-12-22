@@ -2,6 +2,9 @@ import { switchContent } from '../../drawer-menu/actions'
 
 export const connectNode = (addr:string, port: number, token: string, targetPage: string, slientFaile: boolean) => async (dispatch: any) => {
 
+    dispatch({
+        type: 'CONNECT_NODE_BEGIN',
+    })
     try {
         let url = `http://${addr}:${port}/$jade$/debug/configurations`
         if (!addr || !port) {
@@ -48,6 +51,10 @@ export const connectNode = (addr:string, port: number, token: string, targetPage
                     error: e.message,
                     errTime: Date.now(),
                 }
+            })
+        } else {
+            dispatch({
+                type: 'CONNECT_NODE_END',
             })
         }
     }

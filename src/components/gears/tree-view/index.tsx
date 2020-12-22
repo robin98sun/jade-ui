@@ -86,7 +86,7 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
         key={`tree-node-[${this.props.level}][${this.props.id}]`}
       >
         <Grid container alignItems="center">
-          <Grid item xs={1} style={{textAlign: "center", marginTop: 0}}>
+          <Grid item sm={2} md={1} lg={1} style={{textAlign: "center", marginTop: 0}}>
           <IconButton 
             onClick={this.onToggleFold.bind(this)} 
             disabled={!this.props.node.subnodes || Object.keys(this.props.node.subnodes).length===0}
@@ -100,7 +100,7 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
           }
           </IconButton>
           </Grid>
-          <Grid item xs style={{textAlign: "left"}}>
+          <Grid item sm md lg style={{textAlign: "left"}}>
             <Typography variant="body1">
               <Link component="button" variant="body1" onClick={this.onClickNode.bind(this, this.props.node)}>
               {this.props.node.name}
@@ -112,7 +112,15 @@ class TreeViewItem extends Component<TreeNodeItemProps, TreeNodeItemState> {
           this.state.unfolded && this.props.node.subnodes && Object.keys(this.props.node.subnodes)
           ? Object.keys(this.props.node.subnodes!).map((nodeKey, i) => {
               const node = this.props.node.subnodes![nodeKey]
-              return <TreeViewItem node={node} level={this.props.level+1} id={i} key={`tree-node-item-${this.props.level+1}+${i}`}/>
+              return (
+                <TreeViewItem 
+                  node={node} 
+                  level={this.props.level+1} id={i} 
+                  key={`tree-node-item-${this.props.level+1}+${i}`}
+                  spacing={this.props.spacing||0}
+                  onClick={this.onClickNode.bind(this)}
+                />
+              )
             })
           : null
         }
@@ -127,6 +135,7 @@ interface Props {
   style?: any
   root?: TreeNode
   spacing?:number
+  onClick?(node: TreeNode):any
 }
 
 class TreeView extends Component<Props>{
@@ -134,15 +143,19 @@ class TreeView extends Component<Props>{
   componentDidMount() {
   }
 
-
-
   render() {
     const treeStyle = Object.assign({}, {}, this.props.style)
     return (
       <div className="tree-view" style={treeStyle}>
       {
         this.props.root 
-        ? <TreeViewItem node={this.props.root} level={0} id={0} spacing={this.props.spacing||0}/>
+        ? <TreeViewItem 
+            node={this.props.root} 
+            level={0} 
+            id={0} 
+            spacing={this.props.spacing||0}
+            onClick={this.props.onClick?this.props.onClick:()=>{}}
+          />
         : null
       }
       </div>

@@ -4,6 +4,7 @@ import IntroReducer from './intro/reducer'
 import ConnReducer from './conn/reducer'
 import ConfReducer from './conf/reducer'
 import TopoReducer from './topo/reducer'
+import DispatcherReducer from './dispatcher/reducer'
 
 import { defaultItem } from '../content.items'
 
@@ -12,6 +13,7 @@ const subReducers = combineReducers({
     conn: ConnReducer,
     conf: ConfReducer,
     topo: TopoReducer,
+    dispatcher: DispatcherReducer,
 })
 
 const initState : any = {

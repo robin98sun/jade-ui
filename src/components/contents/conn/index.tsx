@@ -15,7 +15,8 @@ import {
   hasShownError,
 } from './actions'
 
-import Modal from '../../gears/modal'
+import ModalStatus from '../../gears/modal-status'
+import ProgressIcon from '../../gears/progress-icon'
 
 interface Props {
   // contentName?: string
@@ -28,6 +29,7 @@ interface Props {
   connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
   hasShownError?(errTime: any):any
   hasShownErrTime?:any
+  isConnecting?:boolean
 }
 
 interface State {
@@ -125,7 +127,13 @@ class ContentConn extends Component<Props, State>{
     }, this.props.style)
     return (
       <div className="content-connection" style={connStyle}>
-        <Modal
+        <ModalStatus 
+          open={this.props.isConnecting||false}
+          message="connecting to node ..."
+          progressIcon={<ProgressIcon isRunning />}
+        />
+
+        <ModalStatus
           open={(this.props.errTime && this.props.errTime !== this.props.hasShownErrTime)||false}
           onClose={this.onConfirmError.bind(this)}
           title="ERROR"

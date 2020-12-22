@@ -7,6 +7,7 @@ import ContentIntro from './intro'
 import ContentConn from './conn'
 import ContentConf from './conf'
 import ContentTopo from './topo'
+import ContentDispatcher from './dispatcher'
 
 interface Props {
   contentName?: string
@@ -29,6 +30,8 @@ class Contents extends Component<Props>{
       return <ContentConf />
     case 'topo' :
       return <ContentTopo />
+    case 'dispatcher' :
+      return <ContentDispatcher />
     default:
       return null
     }

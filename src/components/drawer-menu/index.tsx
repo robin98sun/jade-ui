@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 
 import { switchContent } from './actions'
+import { toggleDrawerMenu } from '../header/actions'
 
 
 interface Props {
@@ -20,7 +21,8 @@ interface Props {
   showClear?: boolean
   style?: object
   open?: boolean
-  switchContent?(item:string):void
+  switchContent?(item:string):any
+  toggleDrawerMenu?(open: boolean):any
   itemLists?: {
     icon: any
     text: string
@@ -31,6 +33,8 @@ interface Props {
 
 interface State {
   open: boolean
+  windowWidth: number,
+  windowHeight: number,
 }
 
 const drawerWidth = 240
@@ -49,7 +53,9 @@ class DrawerMenu extends Component<Props, State>{
   constructor(props: Props) {
     super(props)
     this.state = {
-      open: true
+      open: true,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     }
   }
 
@@ -60,7 +66,16 @@ class DrawerMenu extends Component<Props, State>{
   }
 
   componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions.bind(this));
+  }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
+  }
+
+  updateWindowDimensions() {
+    this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
   }
 
   closeDrawer() {
@@ -121,6 +136,9 @@ class DrawerMenu extends Component<Props, State>{
                         if (this.props.switchContent) {
                           this.props.switchContent(item.name)
                         }
+                        if (this.props.toggleDrawerMenu && this.state.windowWidth < 600) {
+                          this.props.toggleDrawerMenu(false)
+                        }
                       }}
                       color={item.color}
                     >
@@ -158,5 +176,5 @@ class DrawerMenu extends Component<Props, State>{
 
 export default connect(
   (state: any)=>state.app.drawer||{},
-  {switchContent},
+  {switchContent, toggleDrawerMenu},
 )(DrawerMenu);

@@ -1,6 +1,7 @@
 export const contentItems: {[key:string]:string}[] = [
     {
         conf: 'Node Configurations',
+        dispatcher: 'Dispatch Task',
     },
     {
         topo: 'Topology',

@@ -6,10 +6,6 @@ import { connect } from 'react-redux'
 import { welcome } from './App.actions'
 // 
 import {
-  // Grid,
-  // Tabs,
-  // Tab,
-  // Typography,
   Container,
 } from '@material-ui/core'  
 
@@ -18,6 +14,7 @@ import {
   Info as InfoIcon,
   Settings as SettingsIcon,
   OpenWith as OpenWithIcon,
+  SendOutlined as SendOutlinedIcon,
 } from '@material-ui/icons'
 
 
@@ -57,6 +54,8 @@ interface AppProps {
 }
 
 interface State {
+  width: number
+  height: number
 }
 
 const contentStyle: any = {
@@ -79,6 +78,8 @@ class App extends Component<AppProps, State>{
   constructor(props: AppProps) {
     super(props)
     this.state = {
+      width: window.innerWidth, 
+      height: window.innerHeight,
     }
   }
   componentDidMount() {
@@ -86,6 +87,16 @@ class App extends Component<AppProps, State>{
     if (this.props.connectNode) {
       this.props.connectNode('', 0, '', 'conf', true)
     }
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions.bind(this));
+  }
+
+  updateWindowDimensions() {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   getDrawMenuItems() {
@@ -107,6 +118,9 @@ class App extends Component<AppProps, State>{
         case 'topo':
           icon = <OpenWithIcon color={color}/>
           break  
+        case 'dispatcher':
+          icon = <SendOutlinedIcon color={color}/>
+          break
         default:
           icon = null
           break
@@ -131,7 +145,7 @@ class App extends Component<AppProps, State>{
         <MuiThemeProvider theme={defaultTheme} >
           <Header style={{zIndex: 9999, height: headerHeight}}/>
           <DrawerMenu style={{zIndex: 5}} itemLists={this.getDrawMenuItems()}/>
-          <Container style={this.props.drawMenuOpen ? contentStyleShift : contentStyle} maxWidth="lg">
+          <Container style={this.props.drawMenuOpen && this.state.width > 600 ? contentStyleShift : contentStyle} maxWidth="lg">
           <div style={{
             display: 'flex',
             alignItems: 'center',
