@@ -1,14 +1,21 @@
+import { TreeNode } from '../../gears/tree-view'
 
 const initState = {
+    currentNode: {
+        name:'',
+        attributes: null,
+    },
+    drawMenuOpen: true,
 }
 
 const confReducer = (state: any = initState, action: any) => {
     switch (action.type) {
     case 'CONNECT_NODE':
+        const currentNode: TreeNode = {}
+        currentNode.name = `${action.data.protocol}://${action.data.addr}:${action.data.port}`
+        currentNode.attributes = action.data
         return Object.assign({}, state, {
-            addr: action.data.addr,
-            port: action.data.port,
-            config: action.data.config,
+            currentNode,
         })
     case 'TOGGLE_DRAWER_MENU': 
         return Object.assign({}, state, {

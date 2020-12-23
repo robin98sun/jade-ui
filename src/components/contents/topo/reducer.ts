@@ -1,12 +1,12 @@
-import { combineReducers } from 'redux'
+// import { combineReducers } from 'redux'
 
-import {nodeEditorReducer} from './node-editor/reducer'
+// import {nodeEditorReducer} from './node-dialog/reducer'
 
 
-const subReducerSchema = {
-    editor: nodeEditorReducer,
-}
-const subReducers = combineReducers(subReducerSchema)
+// const subReducerSchema = {
+//     editor: nodeEditorReducer,
+// }
+// const subReducers = combineReducers(subReducerSchema)
 
 export interface Message {
     data?: any
@@ -22,6 +22,7 @@ const initState = {
     currentNode: null,
     topology: null,
     isShowingEditor: false,
+    editingNode: null,
 }
 
 const topoReducer = (state: any = initState, action: any) => {
@@ -34,7 +35,7 @@ const topoReducer = (state: any = initState, action: any) => {
                 addr: action.data.addr,
                 port: action.data.port,
                 token: action.data.token,
-                config: action.data.config,
+                protocol: action.data.protocol,
             }
         })
         break
@@ -76,11 +77,13 @@ const topoReducer = (state: any = initState, action: any) => {
     case 'SHOW_NODE_EDITOR': 
         thisState = Object.assign({}, state, {
             isShowingEditor: true,
+            editingNode: action.data,
         })
         break
     case 'CLOSE_NODE_EDITOR':
         thisState = Object.assign({}, state, {
             isShowingEditor: false,
+            editingNode: undefined,
         })
         break
     default:
@@ -88,18 +91,20 @@ const topoReducer = (state: any = initState, action: any) => {
         break
     }
     // calculate sub reducers
-    let tmpState:any = {}
+    // let tmpState:any = {}
     
     // remove properties of current layer
-    for (let prop of Object.keys(subReducerSchema)) {
-        if (state[prop] !== undefined) {
-            tmpState[prop] = state[prop]
-        }
-    }
+    // for (let prop of Object.keys(subReducerSchema)) {
+    //     if (state[prop] !== undefined) {
+    //         tmpState[prop] = state[prop]
+    //     }
+    // }
 
-    const subState = subReducers(tmpState, action)
+    // const subState = subReducers(tmpState, action)
     // return merged state
-    return Object.assign({}, thisState, subState)
+    // return Object.assign({}, thisState, subState)
+
+    return thisState
 }
 
 export default topoReducer

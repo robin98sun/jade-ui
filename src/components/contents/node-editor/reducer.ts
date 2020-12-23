@@ -1,4 +1,4 @@
-import {TreeNode} from '../../../gears/tree-view'
+// import {TreeNode} from '../../gears/tree-view'
 export interface Message {
     data?: any
     isFetching?: boolean
@@ -13,7 +13,7 @@ const initState: any = {
     
 }
 
-export const nodeEditorReducer = (state: any = initState, action: any) => {
+const nodeEditorReducer = (state: any = initState, action: any) => {
     let configState: Message|null = null
 
     let thisState: any = null 
@@ -59,4 +59,4 @@ export const nodeEditorReducer = (state: any = initState, action: any) => {
     return thisState
 }
 
-// export default nodeEditorReducer
+export default nodeEditorReducer

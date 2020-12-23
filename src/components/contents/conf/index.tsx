@@ -1,13 +1,13 @@
 import React from 'react';
 import { Component } from 'react'
 import { connect } from 'react-redux'
-import { 
-  Paper,
-} from '@material-ui/core'
-import { CopyBlock, googlecode } from "react-code-blocks"
+
+import NodeEditor from '../node-editor'
+
+
 
 interface Props {
-  config?: object
+  currentNode?: object
   style?: any
   drawMenuOpen?:boolean
 }
@@ -24,16 +24,13 @@ class ContentConf extends Component<Props>{
     return (
       <div className="content-conf" style={confStyle}>
       {
-        this.props.config
-        ? <Paper>
-          <CopyBlock
-            text={JSON.stringify(this.props.config, null, 4)}
-            language="json"
-            showLineNumbers
-            theme={googlecode}
-            codeBlock
+        this.props.currentNode
+        ? <NodeEditor 
+            node={this.props.currentNode}
+            style={{
+              marginTop: 10,
+            }}
           />
-          </Paper>
         : null
       }
       </div>

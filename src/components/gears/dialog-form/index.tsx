@@ -3,24 +3,14 @@ import { Component } from 'react'
 
 import {
   Dialog,
-  DialogProps,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button,
   Backdrop,
-  Fade,
   Grid,
-  Typography,
   IconButton,
-  PaperProps,
 } from '@material-ui/core'
 import CancelPresentationOutlinedIcon from '@material-ui/icons/CancelPresentationOutlined';
-
-import {
-  grey,
-} from '@material-ui/core/colors'
 
 interface Props {
   // contentName?: string
