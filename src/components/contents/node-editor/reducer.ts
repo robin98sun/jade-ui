@@ -1,7 +1,28 @@
+import { combineReducers } from 'redux'
+
+import ConfigPageReducer from './configurations/reducer'
+import CapabilitiesReducer from './capabilities/reducer'
+import CapacitiesReducer from './capacities/reducer'
+import TasksReducer from './tasks/reducer'
+import PodsReducer from './pods/reducer'
+import StatsReducer from './stats/reducer'
+
+const subReducerSchema = {
+    config: ConfigPageReducer,
+    capabilities: CapabilitiesReducer,
+    capacities: CapacitiesReducer,
+    tasks: TasksReducer,
+    pods: PodsReducer,
+    stats: StatsReducer,
+}
+
+const subReducers = combineReducers(subReducerSchema)
+
 // import {TreeNode} from '../../gears/tree-view'
 export interface Message {
     data?: any
     isFetching?: boolean
+    isUpdating?: boolean
     dataTime?: number
     hasShownDataTime?: number
     error?: string
@@ -14,49 +35,26 @@ const initState: any = {
 }
 
 const nodeEditorReducer = (state: any = initState, action: any) => {
-    let configState: Message|null = null
-
     let thisState: any = null 
 
     switch (action.type) {
-    case 'FETCH_NODE_CONFIG_BEGIN':
-        configState = Object.assign({}, state.config, {
-            isFetching: true
-        })
-        thisState = Object.assign({}, state, {
-            config: configState,
-        })
-        break
-    case 'FETCH_NODE_CONFIG_SUCCEEDED':
-        configState = Object.assign({}, state.config, {
-            isFetching: false,
-            data: action.data,
-            dataTime: Date.now(),
-        })
-        thisState = Object.assign({}, state, {
-            config: configState,
-        })
-        break
-    case 'FETCH_NODE_CONFIG_FAILED':
-        configState = Object.assign({}, state.config, {
-            isFetching: false,
-            error: action.data,
-            errTime: Date.now(),
-        })
-        thisState = Object.assign({}, state, {
-            config: configState,
-        })
-        break
-    case 'SHOW_NODE_EDITOR': 
-        thisState = Object.assign({}, state, {
-            node: action.data,
-        })
-        break
     default:
         thisState = state
         break
     }
-    return thisState
+    // calculate sub reducers
+    let tmpState:any = {}
+    
+    // remove properties of current layer
+    for (let prop of Object.keys(subReducerSchema)) {
+        if (state[prop] !== undefined) {
+            tmpState[prop] = state[prop]
+        }
+    }
+
+    const subState = subReducers(tmpState, action)
+    // return merged state
+    return Object.assign({}, thisState, subState)
 }
 
 export default nodeEditorReducer

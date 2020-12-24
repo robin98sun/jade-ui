@@ -9,6 +9,10 @@ const headerReducer = (state: any = initState, action: any) => {
             title: action.data,
         })
         // break
+     case 'TOGGLE_DRAWER_MENU':
+        return Object.assign({}, state, {
+            drawMenuOpen: action.data,
+        })
     default:
         return state
         // break

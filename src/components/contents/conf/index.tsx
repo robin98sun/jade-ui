@@ -10,10 +10,35 @@ interface Props {
   currentNode?: object
   style?: any
   drawMenuOpen?:boolean
+  isFocusing?: boolean
 }
 
+interface State {
+  canShowContent: boolean
+}
 
-class ContentConf extends Component<Props>{
+class ContentConf extends Component<Props, State>{
+
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      canShowContent: false,
+    }
+  }
+
+  componentDidMount() {
+    setTimeout(()=>{
+      this.setState({
+        canShowContent: true,
+      })
+    }, 200)
+  }
+
+  componentWillUnmount() {
+    this.setState({
+      canShowContent: false,
+    })
+  }
 
   render() {
     const confStyle = Object.assign({}, {
@@ -24,12 +49,13 @@ class ContentConf extends Component<Props>{
     return (
       <div className="content-conf" style={confStyle}>
       {
-        this.props.currentNode
+        this.state.canShowContent && this.props.currentNode
         ? <NodeEditor 
             node={this.props.currentNode}
             style={{
               marginTop: 10,
             }}
+            forceRefreshWhenSwitching
           />
         : null
       }

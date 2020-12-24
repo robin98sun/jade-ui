@@ -1,6 +1,6 @@
 export const contentItems: {[key:string]:string}[] = [
     {
-        conf: 'Node Configurations',
+        conf: 'Node Info',
         dispatcher: 'Dispatch Task',
     },
     {

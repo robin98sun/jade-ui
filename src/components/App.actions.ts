@@ -39,7 +39,3 @@ export const welcome = () => async (dispatch:any) => {
         data: getI18NStr('welcome'),
     })
 }
-
-export const openDrawMenu = (open: boolean) => {
-    
-}

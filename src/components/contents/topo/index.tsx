@@ -70,7 +70,7 @@ class ContentTopo extends Component<Props>{
       <div className="content-topology" style={introStyle}>
         <ModalStatus 
           open={(this.props.topology && this.props.topology.isFetching) ||false}
-          message="getting topology..."
+          message="fetching topology..."
           progressIcon={<ProgressIcon isRunning />}
         />
 
@@ -91,7 +91,7 @@ class ContentTopo extends Component<Props>{
           ? <DialogForm
               open={this.props.isShowingEditor||false}
               title={this.props.editingNode ? this.props.editingNode.name:''}
-              contentView={<NodeEditor />}
+              contentView={<NodeEditor node={this.props.editingNode} forceRefreshWhenSwitching />}
               onClose={this.onCloseEditor.bind(this)}
             />
           : null

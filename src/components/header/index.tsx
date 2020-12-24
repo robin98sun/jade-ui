@@ -21,6 +21,7 @@ interface Props {
   showClear?: boolean
   style?: object
   toggleDrawerMenu?: any
+  drawMenuOpen?: boolean
 }
 
 interface State {
@@ -31,9 +32,16 @@ class Header extends Component<Props, State>{
   constructor(props: Props) {
     super(props)
     this.state = {
-      drawMenuOpen: window.innerWidth > 400,
+      drawMenuOpen: window.innerWidth > 800,
     }
   }
+
+  static getDerivedStateFromProps(props: Props, state: State) {
+    return Object.assign(state, {
+      drawMenuOpen: props.drawMenuOpen
+    })
+  }
+
   componentDidMount() {
     this.props.toggleDrawerMenu(this.state.drawMenuOpen)
   }

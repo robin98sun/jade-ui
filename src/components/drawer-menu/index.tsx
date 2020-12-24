@@ -136,7 +136,7 @@ class DrawerMenu extends Component<Props, State>{
                         if (this.props.switchContent) {
                           this.props.switchContent(item.name)
                         }
-                        if (this.props.toggleDrawerMenu && this.state.windowWidth < 600) {
+                        if (this.props.toggleDrawerMenu && this.state.windowWidth < 800) {
                           this.props.toggleDrawerMenu(false)
                         }
                       }}

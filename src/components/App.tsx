@@ -4,10 +4,13 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 // Actions
 import { welcome } from './App.actions'
+import { toggleDrawerMenu } from './header/actions'
 // 
 import {
   Container,
 } from '@material-ui/core'  
+import { ThemeProvider } from '@material-ui/core/styles'
+import { createMuiTheme } from '@material-ui/core/styles'
 
 import {
   SettingsEthernet as SettingsEthernetIcon,
@@ -17,9 +20,6 @@ import {
   SendOutlined as SendOutlinedIcon,
 } from '@material-ui/icons'
 
-
-
-
 // components
 import Header from './header'
 import DrawerMenu from './drawer-menu'
@@ -28,7 +28,6 @@ import Contents from './contents'
 import { connectNode } from './contents/conn/actions'
 
 import { contentItems } from './content.items'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { blue, cyan, blueGrey, red, amber, green, grey } from '@material-ui/core/colors'
 const defaultTheme = createMuiTheme({
   palette: {
@@ -41,8 +40,9 @@ const defaultTheme = createMuiTheme({
     text: {
       primary: grey[900],
       secondary: grey[600],
-      disabled: grey[300],
-    }
+      disabled: grey[400],
+    },
+    grey: grey,
   }
 })
 
@@ -50,6 +50,7 @@ interface AppProps {
   welcome?(): any
   drawMenuOpen?: boolean
   contentName?: string
+  toggleDrawerMenu?(open: boolean):any
   connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
 }
 
@@ -97,6 +98,11 @@ class App extends Component<AppProps, State>{
 
   updateWindowDimensions() {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
+    if (this.state.width < 800 && this.props.toggleDrawerMenu && this.props.drawMenuOpen) {
+      this.props.toggleDrawerMenu(false)
+    } else if (this.state.width >= 800 && this.props.toggleDrawerMenu && !this.props.drawMenuOpen) {
+      this.props.toggleDrawerMenu(true)
+    }
   }
 
   getDrawMenuItems() {
@@ -142,10 +148,10 @@ class App extends Component<AppProps, State>{
       <div className="App" style={{
         display: 'flex',
       }}>
-        <MuiThemeProvider theme={defaultTheme} >
+        <ThemeProvider theme={defaultTheme} >
           <Header style={{zIndex: 9999, height: headerHeight}}/>
           <DrawerMenu style={{zIndex: 5}} itemLists={this.getDrawMenuItems()}/>
-          <Container style={this.props.drawMenuOpen && this.state.width > 600 ? contentStyleShift : contentStyle} maxWidth="lg">
+          <Container style={this.props.drawMenuOpen ? contentStyleShift : contentStyle} maxWidth="lg">
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -155,7 +161,7 @@ class App extends Component<AppProps, State>{
           }} />
           <Contents />
           </Container>
-        </MuiThemeProvider>
+        </ThemeProvider>
       </div>
       </React.Fragment>
     );
@@ -164,5 +170,5 @@ class App extends Component<AppProps, State>{
 
 export default connect(
   (state:any)=>state.app,
-  {welcome, connectNode},
+  {welcome, connectNode, toggleDrawerMenu},
 )(App);
