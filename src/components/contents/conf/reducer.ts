@@ -21,7 +21,7 @@ const confReducer = (state: any = initState, action: any) => {
         const currentNode: TreeNode = {}
         currentNode.name = (action.data.addr && action.data.port && action.data.protocol) 
                             ? `${action.data.protocol}://${action.data.addr}:${action.data.port}`
-                            : null
+                            : undefined
         currentNode.attributes = action.data
         return Object.assign({}, state, {
             currentNode,
