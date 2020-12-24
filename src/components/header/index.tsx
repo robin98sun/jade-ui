@@ -32,18 +32,22 @@ class Header extends Component<Props, State>{
   constructor(props: Props) {
     super(props)
     this.state = {
-      drawMenuOpen: window.innerWidth > 800,
+      drawMenuOpen: window.innerWidth >=800,
     }
   }
 
   static getDerivedStateFromProps(props: Props, state: State) {
-    return Object.assign(state, {
-      drawMenuOpen: props.drawMenuOpen
-    })
+    if (typeof props.drawMenuOpen !== 'undefined') {
+      return Object.assign(state, {
+        drawMenuOpen: props.drawMenuOpen
+      })
+    } else {
+      return state
+    } 
   }
 
   componentDidMount() {
-    this.props.toggleDrawerMenu(this.state.drawMenuOpen)
+    this.props.toggleDrawerMenu(!!this.state.drawMenuOpen)
   }
   toggleDrawerMenu() {
     this.props.toggleDrawerMenu(!this.state.drawMenuOpen)

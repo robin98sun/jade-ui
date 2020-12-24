@@ -99,6 +99,7 @@ class App extends Component<AppProps, State>{
   updateWindowDimensions() {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
     if (this.state.width < 800 && this.props.toggleDrawerMenu && this.props.drawMenuOpen) {
+      console.log('window size:', this.state.width)
       this.props.toggleDrawerMenu(false)
     } else if (this.state.width >= 800 && this.props.toggleDrawerMenu && !this.props.drawMenuOpen) {
       this.props.toggleDrawerMenu(true)

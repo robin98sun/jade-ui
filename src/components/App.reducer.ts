@@ -7,11 +7,12 @@ import ContentReducer from './contents/reducer'
 
 import { defaultItem } from './content.items'
 
-const subReducers = combineReducers({
+const subReducerSchema = {
     header: HeaderReducer,
     drawer: DrawerReducer,
     content: ContentReducer,
-})
+}
+const subReducers = combineReducers(subReducerSchema)
 
 const initState : any = {
     drawMenuOpen: true,
@@ -38,12 +39,12 @@ const appReducer = (state: any = initState, action: any) => {
     }
 
     // calculate sub reducers
-    const tmpState = Object.assign({},state)
+    const tmpState :any= {}
     
     // remove properties of current layer
-    for (let prop of Object.keys(initState)) {
-        if (tmpState[prop] !== undefined) {
-            delete(tmpState[prop])
+    for (let prop of Object.keys(subReducerSchema)) {
+        if (state[prop] !== undefined) {
+            tmpState[prop]=state[prop]
         }
     }
 
