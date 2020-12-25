@@ -77,6 +77,20 @@ class NodeEditor extends Component<Props, State>{
                           + (this.props.config.data.selfNode.hostname || this.props.config.data.selfNode.address||'')
                           + ':' + this.props.config.data.selfNode.port 
                         : 'null'
+    const basicInfo: {[key:string]:any} = {}
+
+    basicInfo.version = this.props.config && this.props.config.data ? this.props.config.data.version ||'': null
+    if (basicInfo.version) {
+      const parts = basicInfo.version.split('.')
+      if (parts && parts.length === 6) {
+        basicInfo["main version"] = parts[0]
+        basicInfo["sdk build"] = parts[1]
+        basicInfo["jadelet build"] = parts[2]
+        basicInfo["UI build"] = parts[3]
+        basicInfo["DevOps build"] = parts[4]
+        basicInfo["example build"] = parts[5]
+      }
+    }
     return (
       <div style={thisStyle}>
         {
@@ -86,9 +100,7 @@ class NodeEditor extends Component<Props, State>{
               <ObjectEditor
                 title='Basic Info'
                 subtitle={selfNodeName }
-                object={{
-                  version: this.props.config.data.version || 'null'
-                }}
+                object={basicInfo}
               />
               </Grid>
             { nodes.map((nodeName, i) => (
