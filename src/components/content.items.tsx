@@ -16,29 +16,41 @@ export const contentItems: {
     {
         conf: {
             title: 'Node Info',
-            icon: SettingsIcon,
         },
         dispatcher: {
             title: 'Dispatch Task',
-            icon: SendOutlinedIcon,
         },
     },
     {
         topo: { 
             title: 'Topology',
-            icon: OpenWithIcon,
         },
     },
     {
         conn: {
             title: 'Connection',
-            icon: SettingsEthernetIcon,
         },
         intro: {
             title: 'Introduction',
-            icon: InfoIcon,
         },
     }
 ]
+
+export const getContentIcon = (name: string, color: string) => {
+    switch(name) {
+    case 'conf':
+        return <SettingsIcon color={color} />
+    case 'dispatcher':
+        return <SendOutlinedIcon color={color} />
+    case 'topo':
+        return <OpenWithIcon color={color} />
+    case 'conn':
+        return <SettingsEthernetIcon color={color} />
+    case 'intro':
+        return <InfoIcon color={color} />
+    default:
+        return null
+    }
+}
 
 export const defaultItem = 'intro'

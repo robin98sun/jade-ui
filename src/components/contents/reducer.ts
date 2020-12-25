@@ -7,7 +7,7 @@ import TopoReducer from './topo/reducer'
 import DispatcherReducer from './dispatcher/reducer'
 import NodeEditorReducer from './node-editor/reducer'
 
-import { defaultItem } from '../content.items'
+import { defaultItem } from '../content.items.tsx'
 
 const subReducers = combineReducers({
     intro: IntroReducer,
