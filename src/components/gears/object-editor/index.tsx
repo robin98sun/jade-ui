@@ -42,6 +42,12 @@ export const styles = ({palette, spacing}: Theme) => createStyles({
   },
   contentEditing: {
     backgroundColor: palette.grey[50],
+  },
+  item: {
+    color: palette.text.primary,
+  },
+  itemEmpty: {
+    color: palette.text.disabled,
   }
 })
 
@@ -63,7 +69,9 @@ interface Props extends WithStyles<typeof styles>{
   onUpdate?(object: EditableObject):any
   onDelete?():any
   onChange?(object: EditableObject):any
+  onCancel?():any
   theme?: any
+  isEditing?: boolean
 }
 
 interface State {
@@ -94,6 +102,11 @@ class ObjectEditor extends Component<Props, State> {
   }
 
   componentDidMount() {
+    if (this.props.isEditing) {
+      this.setState({
+        isEditing: true,
+      })
+    }
   }
 
   componentDidUpdate() {
@@ -120,6 +133,9 @@ class ObjectEditor extends Component<Props, State> {
     this.setState({
       isEditing: false
     })
+    if (this.props.onCancel) {
+      this.props.onCancel()
+    }
   }
 
   onSubmit() {
@@ -193,13 +209,15 @@ class ObjectEditor extends Component<Props, State> {
                       <ClearOutlinedIcon color="inherit"/>
                     </IconButton>
                   </div> 
-                : <div>
+                : this.props.editable
+                ? <div>
                     <IconButton
                       onClick={this.onStartEditing.bind(this)}
                     >
                       <EditOutlinedIcon />
                     </IconButton>
                   </div>
+                : null
               }
             />
           }
@@ -273,7 +291,8 @@ class ObjectEditor extends Component<Props, State> {
                         notchedOutline: this.state.isEditing
                           ? this.props.classes.notchedOutlineEditing
                           : this.props.classes.notchedOutline
-                      }
+                      },
+                      className: value === 'null' ? this.props.classes.itemEmpty : this.props.classes.item,
                     }}
                     onChange={onChange}
                   />

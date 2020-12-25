@@ -8,7 +8,7 @@ import ObjectEditor from '../../../gears/object-editor'
 
 import { TreeNode } from '../../../gears/tree-view'
 import { Message } from '../reducer'
-import { fetchNodeConfig, updateNodeConfig } from './actions'
+import { fetchNodeConfig, updateNodeConfig } from '../actions'
 
 import {
   Grid,
@@ -34,7 +34,6 @@ class NodeEditor extends Component<Props, State>{
   }
 
   componentDidMount() {
-    console.log('config page mounted')
     if (this.props.fetchNodeConfig) {
       this.props.fetchNodeConfig(this.props.node)
     }
@@ -70,16 +69,31 @@ class NodeEditor extends Component<Props, State>{
       serviceExternal: null,
     }
 
-    const nodes = ['upperNode', 'selfNode']
+    const nodes = ['selfNode', 'upperNode']
+    const selfNodeName = (this.props.config && this.props.config.data && this.props.config.data.selfNode) 
+                      && (this.props.config.data.selfNode.address || this.props.config.data.selfNode.hostname)
+                        ? (this.props.config.data.selfNode.protocol||'http')+'://' 
+                          + (this.props.config.data.selfNode.hostname || this.props.config.data.selfNode.address||'')
+                          + ':' + this.props.config.data.selfNode.port 
+                        : 'null'
     return (
       <div style={thisStyle}>
         {
           this.props.config && this.props.config.data
           ? <Grid container spacing={3}>
+              <Grid item md={4} xs={12} >
+              <ObjectEditor
+                title='Basic Info'
+                subtitle={selfNodeName }
+                object={{
+                  version: this.props.config.data.version || 'null'
+                }}
+              />
+              </Grid>
             { nodes.map((nodeName, i) => (
-                <Grid item sm={6} xs={12} key={'node-'+nodeName+'-'+i}>
+                <Grid item md={4} xs={12} key={'node-'+nodeName+'-'+i}>
                   <ObjectEditor
-                    title={nodeName==='upperNode'?"Upper Node":"Self Node"}
+                    title={nodeName==='upperNode'?"Upper Node":"Node Info"}
                     subtitle={(this.props.config && this.props.config.data && this.props.config.data[nodeName]) 
                               && (this.props.config.data[nodeName].address || this.props.config.data[nodeName].hostname)
                                 ? (this.props.config.data[nodeName].protocol||'http')+'://' 

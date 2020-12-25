@@ -40,7 +40,7 @@ const defaultTheme = createMuiTheme({
     text: {
       primary: grey[900],
       secondary: grey[600],
-      disabled: grey[400],
+      disabled: grey[200],
     },
     grey: grey,
   }
