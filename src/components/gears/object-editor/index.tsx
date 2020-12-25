@@ -11,7 +11,6 @@ import {
   Button,
   IconButton,
   Theme,
-  Fade,
 } from '@material-ui/core'
 
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';

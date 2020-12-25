@@ -19,7 +19,7 @@ import Contents from './contents'
 
 import { connectNode } from './contents/conn/actions'
 
-import { contentItems, getContentIcon } from './content.items'
+import { contentItems } from './content.items'
 import { blue, cyan, blueGrey, red, amber, green, grey } from '@material-ui/core/colors'
 const defaultTheme = createMuiTheme({
   palette: {
@@ -102,11 +102,12 @@ class App extends Component<AppProps, State>{
     return contentItems.map(list => (
       Object.keys(list).map(itemName => {
         const item :any = list[itemName]
-        const color = this.props.contentName===item.title? 'primary' : 'secondary'
+        const color = this.props.contentName===itemName? 'primary' : 'secondary'
+        const IconClass:any = item.icon
         return {
           name: itemName,
           text: item.title,
-          icon: getContentIcon(itemName, color),
+          icon: <IconClass color={color} />,
           color,
         }
       })
