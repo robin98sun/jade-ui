@@ -1,14 +1,43 @@
-export const contentItems: {[key:string]:string}[] = [
+import React, { Component } from 'react'
+import {
+  SettingsEthernet as SettingsEthernetIcon,
+  Info as InfoIcon,
+  Settings as SettingsIcon,
+  OpenWith as OpenWithIcon,
+  SendOutlined as SendOutlinedIcon,
+} from '@material-ui/icons'
+
+export const contentItems: {
+                             [key:string]:{
+                               title: string
+                               icon: any
+                             }
+                           }[] = [
     {
-        conf: 'Node Info',
-        dispatcher: 'Dispatch Task',
+        conf: {
+            title: 'Node Info',
+            icon: SettingsIcon,
+        },
+        dispatcher: {
+            title: 'Dispatch Task',
+            icon: SendOutlinedIcon,
+        },
     },
     {
-        topo: 'Topology',
+        topo: { 
+            title: 'Topology',
+            icon: OpenWithIcon,
+        },
     },
     {
-        conn: 'Connection',
-        intro: 'Introduction',
+        conn: {
+            title: 'Connection',
+            icon: SettingsEthernetIcon,
+        },
+        intro: {
+            title: 'Introduction',
+            icon: InfoIcon,
+        },
     }
 ]
 

@@ -12,14 +12,6 @@ import {
 import { ThemeProvider } from '@material-ui/core/styles'
 import { createMuiTheme } from '@material-ui/core/styles'
 
-import {
-  SettingsEthernet as SettingsEthernetIcon,
-  Info as InfoIcon,
-  Settings as SettingsIcon,
-  OpenWith as OpenWithIcon,
-  SendOutlined as SendOutlinedIcon,
-} from '@material-ui/icons'
-
 // components
 import Header from './header'
 import DrawerMenu from './drawer-menu'
@@ -109,32 +101,13 @@ class App extends Component<AppProps, State>{
   getDrawMenuItems() {
     return contentItems.map(list => (
       Object.keys(list).map(itemName => {
-        const itemText = list[itemName]
-        const color = this.props.contentName===itemName? 'primary' : 'secondary'
-        let icon: any = null
-        switch (itemName) {
-        case 'conn':
-          icon = <SettingsEthernetIcon color={color}/>
-          break
-        case 'intro':
-          icon = <InfoIcon color={color}/>
-          break
-        case 'conf':
-          icon = <SettingsIcon color={color}/>
-          break
-        case 'topo':
-          icon = <OpenWithIcon color={color}/>
-          break  
-        case 'dispatcher':
-          icon = <SendOutlinedIcon color={color}/>
-          break
-        default:
-          icon = null
-          break
-        }
+        const item :any = list[itemName]
+        const color = this.props.contentName===item.title? 'primary' : 'secondary'
+        const IconClass = item.icon
+        let icon: any = IconClass ? <IconClass color={color} /> : null 
         return {
           name: itemName,
-          text: itemText,
+          text: item.title,
           icon,
           color,
         }
