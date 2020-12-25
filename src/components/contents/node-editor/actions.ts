@@ -77,5 +77,9 @@ export const updateNodeConfig = (node: TreeNode|null|undefined, config: any) => 
             data: e.message,
         })
     }
-
 }
+
+export const hasShownErrorOfFetchNodeConfig = (errTime: any) =>({
+    type: 'FETCH_NODE_CONFIG_ERROR_HAS_SHOWN',
+    data: errTime,
+})

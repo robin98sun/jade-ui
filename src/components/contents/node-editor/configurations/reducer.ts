@@ -38,6 +38,14 @@ const configPageReducer = (state: any = initState, action: any) => {
             config: configState,
         })
         break
+    case 'FETCH_NODE_CONFIG_ERROR_HAS_SHOWN':
+        configState = Object.assign({}, state.config, {
+            hasShownErrTime: action.data,
+        })
+        thisState = Object.assign({}, state, {
+            config: configState,
+        })
+        break
     case 'UPDATE_NODE_CONFIG_BEGIN':
         configState = Object.assign({}, state.config, {
             isUpdating: true

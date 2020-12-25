@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import {
   SettingsEthernet as SettingsEthernetIcon,
   Info as InfoIcon,
@@ -6,6 +5,7 @@ import {
   OpenWith as OpenWithIcon,
   SendOutlined as SendOutlinedIcon,
 } from '@material-ui/icons'
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
 export const contentItems: {
                              [key:string]:{
@@ -22,6 +22,10 @@ export const contentItems: {
             title: 'Dispatch Task',
             icon: SendOutlinedIcon,
         },
+        search: {
+            title: 'Search',
+            icon: SearchOutlinedIcon,
+        }
     },
     {
         topo: { 

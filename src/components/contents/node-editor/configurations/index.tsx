@@ -8,7 +8,7 @@ import ObjectEditor from '../../../gears/object-editor'
 
 import { TreeNode } from '../../../gears/tree-view'
 import { Message } from '../reducer'
-import { fetchNodeConfig, updateNodeConfig } from '../actions'
+import { fetchNodeConfig, updateNodeConfig, hasShownErrorOfFetchNodeConfig } from '../actions'
 
 import {
   Grid,
@@ -20,6 +20,7 @@ interface Props {
   config?: Message
   fetchNodeConfig?(node: TreeNode|null|undefined):any
   updateNodeConfig?(node: TreeNode|null|undefined, config: any): any
+  hasShownErrorOfFetchNodeConfig?(errTime: number):any
 }
 
 interface State {
@@ -124,7 +125,23 @@ class NodeEditor extends Component<Props, State>{
         <ModalStatus
           open={(this.props.config && (this.props.config.isFetching || this.props.config.isUpdating))||false}
           progressIcon={<ProgressIcon isRunning/>}
-          message={this.props.config && this.props.config.isFetching ? 'fetching configurations...' : 'updating...'}
+          message={
+            this.props.config && this.props.config.isFetching 
+            ? 'fetching configurations...' 
+            : this.props.config && this.props.config.isUpdating
+            ? 'updating...'
+            : 'loading...'
+          }
+        />
+        <ModalStatus 
+          open={(this.props.config && this.props.config.errTime && this.props.config.errTime !== this.props.config.hasShownErrTime)||false}
+          title="ERROR"
+          message={this.props.config ? this.props.config.error:''}
+          onClose={()=>{
+            if (this.props.hasShownErrorOfFetchNodeConfig && this.props.config && this.props.config.errTime !== undefined) {
+              this.props.hasShownErrorOfFetchNodeConfig(this.props.config.errTime)
+            }
+          }}
         />
       </div>
     );
@@ -134,6 +151,6 @@ class NodeEditor extends Component<Props, State>{
 export default connect(
   (state: any)=>state.app.content.editor.config||{},
   {
-    fetchNodeConfig, updateNodeConfig
+    fetchNodeConfig, updateNodeConfig, hasShownErrorOfFetchNodeConfig
   },
 )(NodeEditor);
