@@ -47,7 +47,8 @@ class NodeEditor extends Component<Props, State>{
       let newConfig:any = Object.assign({}, this.props.config.data)
       newConfig.capabilities = []
       for(let i=0;i<this.props.config.data.capabilities.length;i++) {
-        newConfig.capabilities[i] = Object.assign({}, this.props.config.data.capabilities[i])
+        if (!this.props.config.data.capabilities[i]) continue
+        newConfig.capabilities.push(Object.assign({}, this.props.config.data.capabilities[i]))
       }
       let newItem : any = newValue
 
@@ -86,6 +87,24 @@ class NodeEditor extends Component<Props, State>{
         newConfig.capabilities[idx] = newItem
       } else {
         newConfig.capabilities.unshift(newItem)
+      }
+      this.props.updateNodeConfig(this.props.node, newConfig)
+      if (idx < 0) {
+        this.setState({
+          isAdding: false,
+        })
+      }
+    }
+  }
+
+  onDelete(idx: number) {
+    if (this.props.updateNodeConfig && this.props.config && this.props.config.data&& this.props.config.data.capabilities&& this.props.config.data.capabilities.length) {
+      let newConfig:any = Object.assign({}, this.props.config.data)
+      newConfig.capabilities = []
+      for(let i=0;i<this.props.config.data.capabilities.length;i++) {
+        if (i===idx) continue
+        if (!this.props.config.data.capabilities[i]) continue
+        newConfig.capabilities.push(Object.assign({}, this.props.config.data.capabilities[i]))
       }
       this.props.updateNodeConfig(this.props.node, newConfig)
     }
@@ -156,13 +175,14 @@ class NodeEditor extends Component<Props, State>{
                   </Fade>
               }
             { this.props.config.data.capabilities.map((rawItem:any, i:number) => {
+                if (!rawItem) return null
                 const item:{[key:string]:any} = Object.assign({}, itemSchema, rawItem)
                 if (item.api) {
                   delete item.api
                 }
                 return (
-                  <Fade in={true} timeout={1500}>
-                  <Grid item md={6} xs={12} key={selfNodeName+'-capabilities-'+i}>
+                  <Fade in={true} timeout={1500} key={selfNodeName+'-capabilities-'+i}>
+                  <Grid item md={6} xs={12} >
                     <ObjectEditor
                       title={item.name}
                       subtitle={rawItem.api}
@@ -173,6 +193,9 @@ class NodeEditor extends Component<Props, State>{
                       name={item.name}
                       onUpdate={(newValue: any)=>{
                         this.onUpdate.call(this, i, newValue)
+                      }}
+                      onDelete={()=> {
+                        this.onDelete.call(this, i)
                       }}
                     />
                   </Grid>

@@ -11,6 +11,7 @@ import {
   Button,
   IconButton,
   Theme,
+  Fade,
 } from '@material-ui/core'
 
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
@@ -77,6 +78,7 @@ interface Props extends WithStyles<typeof styles>{
 interface State {
   isEditing: boolean
   edition: number
+  isAddingProperty: boolean
 }
 
 class ObjectEditor extends Component<Props, State> {
@@ -87,6 +89,7 @@ class ObjectEditor extends Component<Props, State> {
     this.state={
       isEditing: false,
       edition: Date.now(),
+      isAddingProperty: false,
     }
     this.editingObject = null
   }
@@ -98,6 +101,7 @@ class ObjectEditor extends Component<Props, State> {
     return Object.assign({}, state, {
       isEditing: false,
       edition: Date.now(),
+      isAddingProperty: false,
     })
   }
 
@@ -105,6 +109,7 @@ class ObjectEditor extends Component<Props, State> {
     if (this.props.isEditing) {
       this.setState({
         isEditing: true,
+        isAddingProperty: false,
       })
     }
   }
@@ -125,13 +130,15 @@ class ObjectEditor extends Component<Props, State> {
     this.editingObject = {}
     this.setState({
       isEditing: true,
+      isAddingProperty: false,
     })
   }
 
   onCancelEditing() {
     this.editingObject = null
     this.setState({
-      isEditing: false
+      isEditing: false,
+      isAddingProperty: false
     })
     if (this.props.onCancel) {
       this.props.onCancel()
@@ -149,6 +156,7 @@ class ObjectEditor extends Component<Props, State> {
     this.editingObject = null
     this.setState({
       isEditing: false,
+      isAddingProperty: false,
     })
   }
 
@@ -158,8 +166,15 @@ class ObjectEditor extends Component<Props, State> {
     }
     this.setState({
       isEditing: false,
+      isAddingProperty: false,
     })
     this.editingObject = null
+  }
+
+  onAddProperty() {
+    this.setState({
+      isAddingProperty: true,
+    })
   }
 
   render() {
@@ -265,7 +280,7 @@ class ObjectEditor extends Component<Props, State> {
                   const newObj = Object.assign({},this.editingObject, tempObj)
                   this.editingObject = newObj
                   this.onPropValueChange.call(this, e, e.target.name, e.target.value)
-                  setInputValue(newObj[e.target.name])
+                  setInputValue(newObj[e.target.name]===null?undefined:newObj[e.target.name])
                 }
                 return (
                   <TextField
@@ -304,15 +319,22 @@ class ObjectEditor extends Component<Props, State> {
             })
           }
           {
-            this.props.editable && this.props.canAppendProperties
+            false && this.props.editable && this.props.canAppendProperties && this.state.isEditing 
             ? <Button
                 fullWidth
+                variant='contained'
                 style={{
                   marginTop: (Object.keys(this.props.object||{}).length ? spaceUnit*2:spaceUnit)*(this.props.spacing||1)
                 }}
               >
-                <PlaylistAddIcon />
+                <PlaylistAddIcon style={{marginRight: 20}}/> Add Property
               </Button>
+            : null
+          }
+
+          {
+            this.state.isAddingProperty
+            ? null
             : null
           }
           </CardContent>
