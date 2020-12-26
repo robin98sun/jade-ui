@@ -22,16 +22,16 @@ export const contentItems: {
             title: 'Dispatch Task',
             icon: SendOutlinedIcon,
         },
-        search: {
-            title: 'Search',
-            icon: SearchOutlinedIcon,
-        }
     },
     {
         topo: { 
             title: 'Topology',
             icon: OpenWithIcon,
         },
+        search: {
+            title: 'Search',
+            icon: SearchOutlinedIcon,
+        }
     },
     {
         conn: {

@@ -24,21 +24,21 @@ import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutl
 
 export const styles = ({palette, spacing}: Theme) => createStyles({
   inputLabelEditing: {
-    color: palette.info.main,
+    color: palette.primary.main,
   },
   inputLabelNotEditing: {
-    color: palette.text.primary,
+    color: palette.text.secondary,
   },
   input: {
-    color: palette.info.main,
+    color: palette.primary.main,
   },
   notchedOutline: {
     borderWidth: 1,
     borderColor: palette.text.disabled,
   },
   notchedOutlineEditing: {
-    borderWidth: 2,
-    borderColor: palette.info.main,
+    borderWidth: 1,
+    borderColor: palette.primary.main,
   },
   content: {
     backgroundColor: 'white',
@@ -63,6 +63,7 @@ interface Props extends WithStyles<typeof styles>{
   style?: any
   name?: string
   object?: EditableObject
+  keyValuePairs?: {key: string, value: any}[]
   inputMode?: boolean
   editable?: boolean
   deletable?: boolean
@@ -71,13 +72,14 @@ interface Props extends WithStyles<typeof styles>{
   title?: string
   subtitle?: string
   spacing?: number
-  onUpdate?(object: EditableObject|null|undefined):any
+  onUpdate?(object: EditableObject|{key: string, value: any}[]|null|undefined):any
   onDelete?():any
-  onChange?(object: EditableObject|null|undefined, propName: string, value: any):any
+  onChange?(object: EditableObject|{key: string, value: any}[]|null|undefined, propName: string, value: any):any
   onCancel?():any
   theme?: any
   isEditing?: boolean
   editablePropName?:boolean
+  arrayOfkeyValuePairs?:boolean
 }
 
 interface State {
@@ -85,6 +87,7 @@ interface State {
   edition: number
   isAddingProperty: boolean
   object: EditableObject
+  keyValuePairs: {key: string, value: any}[]
   modified: boolean
 }
 
@@ -92,6 +95,7 @@ class ObjectEditor extends Component<Props, State> {
 
   private editingObject: EditableObject|null
   private keyMap: EditableObject|null
+  private keyValuePairs: {key: string, value: any}[]|null
   constructor(props: Props) {
     super(props)
     this.state={
@@ -99,10 +103,12 @@ class ObjectEditor extends Component<Props, State> {
       edition: Date.now(),
       isAddingProperty: false,
       object: props.object||{},
+      keyValuePairs: props.keyValuePairs||[],
       modified: false,
     }
     this.editingObject = null
     this.keyMap = null
+    this.keyValuePairs = null
   }
 
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -113,7 +119,8 @@ class ObjectEditor extends Component<Props, State> {
       isEditing: false,
       edition: Date.now(),
       isAddingProperty: false,
-      object: props.object,
+      object: props.object||{},
+      keyValuePairs: props.keyValuePairs||[],
       modified: false,
     })
   }
@@ -121,14 +128,22 @@ class ObjectEditor extends Component<Props, State> {
   componentDidMount() {
     if (this.props.isEditing) {
       this.setState({
-        isEditing: true,
+        isEditing: this.props.isEditing||false,
         isAddingProperty: false,
       })
     }
   }
 
   componentDidUpdate() {
-    
+    const obj = Object.assign({}, this.props.object, this.editingObject||this.keyMap ? this.assembleObject() : {}, this.props.object)
+    const kvp = this.keyValuePairs || this.props.keyValuePairs || []
+    if (JSON.stringify(obj) !== JSON.stringify(this.state.object)
+      || JSON.stringify(kvp) !== JSON.stringify(this.state.keyValuePairs)) {
+      this.setState({
+        object: obj,
+        keyValuePairs: kvp
+      })
+    }
   }
 
   assembleObject() {
@@ -137,8 +152,10 @@ class ObjectEditor extends Component<Props, State> {
       if (this.keyMap) {
         for (let key of Object.keys(this.keyMap)) {
           const newKey = this.keyMap[key]
-          newObj[newKey] = newObj[key]
+          const value = newObj[key]
           delete newObj[key]
+          if (!newKey) continue
+          newObj[newKey] = value
         }
       }
       return newObj
@@ -148,8 +165,14 @@ class ObjectEditor extends Component<Props, State> {
 
   onPropValueChange(isKeyChanged: boolean, newObj: any, propName:string, value:any) {
     if (this.state.isEditing||this.props.inputMode) {
-      if (this.props.onChange) {
-        this.props.onChange(this.assembleObject(), propName, value)
+      if (this.props.arrayOfkeyValuePairs) {
+        if (this.props.onChange && this.keyValuePairs) {
+          this.props.onChange(this.keyValuePairs, propName, value)
+        }
+      } else {
+        if (this.props.onChange) {
+          this.props.onChange(this.assembleObject(), propName, value)
+        }
       }
     }
   }
@@ -157,10 +180,12 @@ class ObjectEditor extends Component<Props, State> {
   onStartEditing() {
     this.editingObject = {}
     this.keyMap = {}
+    this.keyValuePairs = this.copyKeyValuePaires(this.state.keyValuePairs)
     this.setState({
       isEditing: true,
       isAddingProperty: false,
       object: this.props.object||{},
+      keyValuePairs: this.props.keyValuePairs||[],
       modified: false,
     })
   }
@@ -168,10 +193,12 @@ class ObjectEditor extends Component<Props, State> {
   onCancelEditing() {
     this.editingObject = null
     this.keyMap = null
+    this.keyValuePairs = null
     this.setState({
       isEditing: false,
       isAddingProperty: false,
       object: this.props.object||{},
+      keyValuePairs: this.props.keyValuePairs||[],
       modified: false,
     })
     if (this.props.onCancel) {
@@ -180,22 +207,35 @@ class ObjectEditor extends Component<Props, State> {
   }
 
   onSubmit() {
-    const newObj = this.assembleObject()
-    if ((this.editingObject && Object.keys(this.editingObject).length > 0)
-      ||(this.keyMap && Object.keys(this.keyMap).length > 0)
-      || this.state.modified
-      ) {
-      if (this.props.onUpdate) {
-        this.props.onUpdate(newObj)
+    let newObj :EditableObject|null= this.state.object
+    let kvp = this.state.keyValuePairs
+    if (this.props.arrayOfkeyValuePairs) {
+      if (this.keyValuePairs) {
+        kvp = this.keyValuePairs
+        if (this.props.onUpdate) {
+          this.props.onUpdate(this.keyValuePairs)
+        }
+      }
+    } else { 
+      newObj = this.assembleObject()
+      if ((this.editingObject && Object.keys(this.editingObject).length > 0)
+        ||(this.keyMap && Object.keys(this.keyMap).length > 0)
+        || this.state.modified
+        ) {
+        if (this.props.onUpdate) {
+          this.props.onUpdate(newObj)
+        }
       }
     }
 
     this.editingObject = null
     this.keyMap = null
+    this.keyValuePairs = null
     this.setState({
       isEditing: false,
       isAddingProperty: false,
       object: newObj||{},
+      keyValuePairs: kvp||[],
       modified: false,
     })
   }
@@ -208,52 +248,85 @@ class ObjectEditor extends Component<Props, State> {
       isEditing: false,
       isAddingProperty: false,
       object: {},
+      keyValuePairs: [],
       modified: false,
     })
     this.editingObject = null
     this.keyMap = null
+    this.keyValuePairs = null
+  }
+
+  copyKeyValuePaires(sourceKvp: {key:string, value:any}[]) {
+    const kvp :{key:string, value: any}[] = []
+    for(let i=0;i<sourceKvp.length;i++){
+      kvp.push(Object.assign({},sourceKvp[i]))
+    }
+    return kvp
   }
 
   onAddProperty() {
-    let newObj: EditableObject = this.assembleObject()||{}
-    let newProp = 'prop'
-    if (newObj[newProp]!==undefined) {
-      for(let i=1;true;i++) {
-        newProp = 'prop'+i
-        if (newObj[newProp]===undefined) {
-          break
+    if (this.props.arrayOfkeyValuePairs) {
+      let kvp = this.keyValuePairs || this.state.keyValuePairs
+      kvp.push({key: '', value: null})
+      this.keyValuePairs = this.copyKeyValuePaires(kvp)
+      this.setState({
+        keyValuePairs: kvp,
+      })
+    } else {
+      let newObj: EditableObject = this.assembleObject() || {}
+      let newProp = 'prop'
+      let existingProps = Object.keys(newObj)
+      if (existingProps.indexOf(newProp)>=0) {
+        for(let i=1;true;i++) {
+          newProp = 'prop'+i
+          if (existingProps.indexOf(newProp)<0){
+            break
+          }
         }
       }
-    }
-    newObj[newProp]=null
-    this.editingObject={}
-    this.keyMap={}
-    this.setState({
-      object: newObj,
-      modified: true,
-    })
-    if (this.props.onChange) {
-      this.props.onChange(newObj, newProp, undefined)
+      newObj[newProp]=null
+      this.editingObject={}
+      this.keyMap={}
+      this.setState({
+        object: newObj,
+        modified: true,
+      })
+      if (this.props.onChange) {
+        this.props.onChange(newObj, newProp, undefined)
+      }
     }
   }
 
-  onRemoveProperty(propName: string) {
-    let removedKey = propName
-    if (this.keyMap && this.keyMap[propName]) {
-      removedKey = this.keyMap[propName]
-    }
-    let newObj: EditableObject|null = this.assembleObject()
-    if (newObj && newObj[removedKey]!==undefined) {
-      delete newObj[removedKey]
-    }
-    this.editingObject={}
-    this.keyMap={}
-    this.setState({
-      object: newObj||{},
-      modified: true,
-    })
-    if (this.props.onChange) {
-      this.props.onChange(newObj, propName, undefined)
+  onRemoveProperty(propName: string, idx: number) {
+    if (this.props.arrayOfkeyValuePairs) {
+      console.log('removing, prop:',propName,'idx:',idx, 'state pairs:', this.state.keyValuePairs)
+      const kvp = this.keyValuePairs || this.state.keyValuePairs
+      if (idx < kvp.length) {
+        kvp.splice(idx,1)
+        this.keyValuePairs=this.copyKeyValuePaires(kvp)
+        this.setState({
+          keyValuePairs: kvp,
+        })
+      }
+    } else {
+      let removedKey = propName
+      if (this.keyMap && this.keyMap[propName]) {
+        removedKey = this.keyMap[propName]
+      }
+      let newObj: EditableObject|null = this.assembleObject()
+      if (newObj && newObj[removedKey]!==undefined) {
+        delete newObj[removedKey]
+      }
+      this.editingObject={}
+      this.keyMap={}
+      this.keyValuePairs = []
+      this.setState({
+        object: newObj||{},
+        modified: true,
+      })
+      if (this.props.onChange) {
+        this.props.onChange(newObj, propName, undefined)
+      }
     }
   }
 
@@ -262,13 +335,23 @@ class ObjectEditor extends Component<Props, State> {
 
     }, this.props.style)
     const spaceUnit = 5
+
+    let keyValuePairs: {key: string, value: any}[] = []
+    if (this.props.arrayOfkeyValuePairs) {
+      keyValuePairs = this.state.keyValuePairs
+    } else {
+      for (let key of Object.keys(this.state.object)) {
+        keyValuePairs.push({key, value: this.state.object[key]})
+      }
+    }
+
     const AlwaysFocusDuringInput = (props: {
                                               i: number, 
                                               propName: string,
                                               label: string,
                                               value: any,
                                               onChange:any,
-                                              useKeyMap?: boolean,
+                                              forKey?: boolean,
                                             }) => {
       const [inputValue, setInputValue] = React.useState(props.value)
       // setInputValue(value)
@@ -276,23 +359,40 @@ class ObjectEditor extends Component<Props, State> {
         if (!this.state.isEditing) {
           return
         }
-        const tempObj:EditableObject = {}
-        tempObj[e.target.name] = e.target.value === '' ? null : e.target.value
-        if (e.target.value) {
-          try {
-            let n = Number(tempObj[e.target.name])
-            if (!Number.isNaN(n)) {
-              tempObj[e.target.name] = n
-            }
-          } catch (e) {
+        let v : any= e.target.value 
+        if (!props.forKey) {
+          if (v==='') {
+            v = null
+          } else {
+            try {
+              let n = Number(v)
+              if (!Number.isNaN(n)) {
+                v = n
+              }
+            } catch (e) {
 
+            }
           }
         }
-        const sourceObj: any = props.useKeyMap ? this.keyMap : this.editingObject
-        const newObj = Object.assign({},sourceObj, tempObj)
-        props.useKeyMap ? this.keyMap = newObj : this.editingObject = newObj
-        props.onChange.call(this, newObj, e.target.name, e.target.value)
-        setInputValue(newObj[e.target.name]===null?undefined:newObj[e.target.name])
+        if (this.props.arrayOfkeyValuePairs) {
+          if (this.keyValuePairs && props.i < this.keyValuePairs.length) {
+            if (props.forKey) {
+              this.keyValuePairs[props.i].key = v
+            } else {
+              this.keyValuePairs[props.i].value = v
+            }
+          }
+          props.onChange.call(this, this.keyValuePairs, e.target.name, v)
+        } else {
+          const tempObj:EditableObject = {}
+          tempObj[e.target.name] = v
+          
+          const sourceObj: any = props.forKey ? this.keyMap : this.editingObject
+          const newObj = Object.assign({},sourceObj, tempObj)
+          props.forKey ? this.keyMap = newObj : this.editingObject = newObj
+          props.onChange.call(this, newObj, e.target.name, v)
+        }
+        setInputValue(v===null?undefined:v)
       }
       return (
         <TextField
@@ -325,6 +425,7 @@ class ObjectEditor extends Component<Props, State> {
         />
       )
     }
+
     return (
       <div style={thisStyle}>
         <Card>
@@ -335,7 +436,7 @@ class ObjectEditor extends Component<Props, State> {
               }}
               style={{
                 backgroundColor: this.state.isEditing && !this.props.inputMode
-                    ? this.props.theme.palette.info.main
+                    ? this.props.theme.palette.primary.main
                     : this.props.theme.palette.grey[200],
                 color: this.state.isEditing && !this.props.inputMode
                     ? this.props.theme.palette.grey[50]
@@ -364,7 +465,7 @@ class ObjectEditor extends Component<Props, State> {
                     <IconButton
                       onClick={this.onCancelEditing.bind(this)}
                     >
-                      <ClearOutlinedIcon color="inherit"/>
+                      <ClearOutlinedIcon color="secondary"/>
                     </IconButton>
                   </div> 
                 : this.props.editable && !this.props.inputMode
@@ -387,9 +488,10 @@ class ObjectEditor extends Component<Props, State> {
             : this.props.classes.content
           }>
           {
-            Object.keys(this.state.object||{}).map((propName,i) => {
-              const key = this.props.name+'-prop-'+i+"-"+propName+Date.now()
-              let rawValue = (this.state.object)[propName]
+            keyValuePairs.map((item,i) => {
+              const propName = item.key
+              const rjKey = this.props.name+'-prop-'+i+"-"+propName+Date.now()
+              let rawValue = item.value
               const value = typeof rawValue === 'string'
                     ? rawValue
                     : typeof rawValue === 'number'
@@ -400,14 +502,15 @@ class ObjectEditor extends Component<Props, State> {
                     ? undefined
                     : 'null'
               if (this.props.editablePropName) {
-
                 return (
-                  <Grid container spacing={1} key={key} alignItems="center">
-                    <Grid item sm={this.props.inputMode || this.state.isEditing?4:5} xs={5}>
+                  <Grid container spacing={1} key={rjKey} alignItems="center">
+                    <Grid item 
+                      md={this.props.inputMode || this.state.isEditing?4:5}
+                      sm={this.props.inputMode || this.state.isEditing?4:6} xs={5}>
                       <AlwaysFocusDuringInput 
                       i={i} 
-                      useKeyMap
-                      propName={propName}
+                      forKey
+                      propName={this.props.arrayOfkeyValuePairs?'key':propName}
                       label='key'
                       value={propName}
                       onChange={(newObj: any, p: string, v: any)=> {
@@ -415,10 +518,10 @@ class ObjectEditor extends Component<Props, State> {
                       }}
                     />
                     </Grid>
-                    <Grid item sm={7} xs={this.props.inputMode || this.state.isEditing?5:7}>
+                    <Grid item md={7} sm={6} xs={this.props.inputMode || this.state.isEditing?5:7}>
                       <AlwaysFocusDuringInput 
                         i={i} 
-                        propName={propName} 
+                        propName={this.props.arrayOfkeyValuePairs?'key':propName} 
                         label='value'
                         value={value}
                         onChange={(newObj: any, p: string, v: any)=> {
@@ -428,10 +531,10 @@ class ObjectEditor extends Component<Props, State> {
                     </Grid>
                     {
                       this.props.inputMode || this.state.isEditing
-                      ? <Grid item sm={1} xs={2} style={{textAlign: "center"}}>
+                      ? <Grid item md={1} sm={2} xs={2} style={{textAlign: "center"}}>
                           <IconButton 
                             style={{marginTop: 10}}
-                            onClick={this.onRemoveProperty.bind(this, propName)}
+                            onClick={this.onRemoveProperty.bind(this, propName, i)}
                           >
                             <RemoveCircleOutlineOutlinedIcon color="error" />
                           </IconButton>
@@ -443,7 +546,7 @@ class ObjectEditor extends Component<Props, State> {
               } else {
                 return (
                   <AlwaysFocusDuringInput 
-                    key={key} 
+                    key={rjKey} 
                     i={i} 
                     propName={propName} 
                     label={propName}

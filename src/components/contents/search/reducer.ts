@@ -1,12 +1,5 @@
 // import { combineReducers } from 'redux'
-
-// import {nodeEditorReducer} from './node-dialog/reducer'
-
-
-// const subReducerSchema = {
-//     editor: nodeEditorReducer,
-// }
-// const subReducers = combineReducers(subReducerSchema)
+import { TreeNode } from '../../gears/tree-view'
 
 export interface Message {
     data?: any
@@ -20,59 +13,57 @@ export interface Message {
 }
 
 const initState = {
-    currentNode: null,
-    topology: null,
+    node: null,
+    searchResult: null,
     isShowingEditor: false,
     editingNode: null,
 }
 
-const topoReducer = (state: any = initState, action: any) => {
+const searchReducer = (state: any = initState, action: any) => {
     let thisState: any = null
-    let topoState: Message|null = null
+    let searchState: Message|null = null
     switch (action.type) {
     case 'CONNECT_NODE':
         thisState = Object.assign({}, state, {
-            currentNode: {
-                addr: action.data.addr,
-                port: action.data.port,
-                token: action.data.token,
-                protocol: action.data.protocol,
+            node: {
+                name: `${action.data.protocol}://${action.data.addr}:${action.data.port}`,
+                attributes: action.data,
             }
         })
         break
-    case 'GET_TOPOLOGY_BEGIN':
-        topoState = Object.assign({}, state.topology, {
+    case 'SEARCH_FANOUT_BEGIN':
+        searchState = Object.assign({}, state.searchResult, {
             isFetching: true,
         })
         thisState = Object.assign({}, state, {
-            topology: topoState,
+            searchResult: searchState,
         })
         break
-    case 'GET_TOPOLOGY_FAILED':
-        topoState = Object.assign({}, state.topology, {
+    case 'SEARCH_FANOUT_FAILED':
+        searchState = Object.assign({}, state.searchResult, {
             isFetching: false,
             errTime: Date.now(),
             error: action.data,
         })
         thisState = Object.assign({}, state, {
-            topology: topoState,
+            searchResult: searchState,
         })
         break
-    case 'GET_TOPOLOGY_ERROR_HAS_SHOWN':
-        topoState = Object.assign({}, state.topology, {
+    case 'SEARCH_FANOUT_ERROR_HAS_SHOWN':
+        searchState = Object.assign({}, state.searchResult, {
             hasShownErrTime: action.data,
         })
         thisState = Object.assign({}, state, {
-            topology: topoState,
+            searchResult: searchState,
         })
         break
-    case 'GET_TOPOLOGY_SUCCEEDED':
-        topoState = Object.assign({}, state.topology, {
+    case 'SEARCH_FANOUT_SUCCEEDED':
+        searchState = Object.assign({}, state.searchResult, {
             data: action.data,
             isFetching: false,
         })
         thisState = Object.assign({}, state, {
-            topology: topoState,
+            searchResult: searchState,
         })
         break
     case 'SHOW_NODE_EDITOR': 
@@ -91,21 +82,8 @@ const topoReducer = (state: any = initState, action: any) => {
         thisState = state
         break
     }
-    // calculate sub reducers
-    // let tmpState:any = {}
-    
-    // remove properties of current layer
-    // for (let prop of Object.keys(subReducerSchema)) {
-    //     if (state[prop] !== undefined) {
-    //         tmpState[prop] = state[prop]
-    //     }
-    // }
-
-    // const subState = subReducers(tmpState, action)
-    // return merged state
-    // return Object.assign({}, thisState, subState)
 
     return thisState
 }
 
-export default topoReducer
+export default searchReducer

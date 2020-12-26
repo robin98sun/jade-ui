@@ -5,7 +5,9 @@ import { connect } from 'react-redux'
 import {
   Grid,
   Fade,
+  Button,
 } from '@material-ui/core'
+import PageviewOutlinedIcon from '@material-ui/icons/PageviewOutlined';
 
 import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
@@ -18,11 +20,13 @@ import {
   hasShownErrorOfSearchFanout, 
   showNodeEditor,
   closeNodeEditor,
+  searchFanout,
 } from './actions'
 import { Message } from './reducer'
 
 interface Props {
   style?: any
+  node?: TreeNode
   isShowingNodeEditor?:boolean
   isShowingSearchResult?: boolean
   searchResult?: Message
@@ -30,10 +34,17 @@ interface Props {
   hasShownErrorOfSearchFanout?(errTime: number): any
   showNodeEditor?(node: TreeNode): any
   closeNodeEditor?(): any
+  searchFanout?(node: TreeNode|undefined, collectiveCriteria: any, exclusiveCriteria: any):any
 }
 
+interface State {
+  collectiveCriteria: any
+  exclusiveCriteria: any
+}
 class ContentTopo extends Component<Props>{
 
+  private collectiveCriteria: any
+  private exclusiveCriteria: any
   componentDidMount() {
   }
 
@@ -52,6 +63,21 @@ class ContentTopo extends Component<Props>{
   onCloseEditor() {
     if (this.props.closeNodeEditor) {
       this.props.closeNodeEditor()
+    }
+  }
+
+  onCriteriaChange(type: string, criteria: any) {
+    if (type === 'collective') {
+      this.collectiveCriteria = criteria
+    } else if (type === 'exclusive') {
+      this.exclusiveCriteria = criteria
+    }
+  }
+
+  onSearch() {
+    console.log('search: collective:', this.collectiveCriteria, 'exclusive:', this.exclusiveCriteria)
+    if (this.props.searchFanout) {
+      this.props.searchFanout(this.props.node, this.collectiveCriteria, this.exclusiveCriteria)
     }
   }
 
@@ -76,6 +102,20 @@ class ContentTopo extends Component<Props>{
 
         <Grid container spacing={2}>
         {
+          !this.props.isShowingNodeEditor && !this.props.isShowingSearchResult 
+          ? <Grid item xs={12} >
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={this.onSearch.bind(this)}
+              >
+                <PageviewOutlinedIcon />
+              </Button>
+            </Grid> 
+          : null
+        }
+
+        {
           !this.props.isShowingNodeEditor && !this.props.isShowingSearchResult
           ? requirementTypes.map((reqType, i)=>{
               return (
@@ -85,10 +125,14 @@ class ContentTopo extends Component<Props>{
                     inputMode
                     canAppendProperties
                     editablePropName
+                    arrayOfkeyValuePairs
                     appendPropButtonText="Add Criteria"
-                    object={{}}
-                    onChange={(newData: any, propName: string, value: any) => {
-                      console.log('newData:', newData, 'propName:', propName, 'value:', value)
+                    // keyValuePairs={[]}
+                    onChange={(newData: {key: string, value: any}[], propName: string, value: any) => {
+                      this.onCriteriaChange.call(this, reqType, newData.map(item=>({
+                        name: item.key,
+                        value: item.value,
+                      })))
                     }}
                   />
                 </Grid>
@@ -129,5 +173,6 @@ export default connect(
   { 
     hasShownErrorOfSearchFanout, 
     showNodeEditor, closeNodeEditor,
+    searchFanout,
   },
 )(ContentTopo);

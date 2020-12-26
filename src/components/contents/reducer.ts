@@ -6,6 +6,7 @@ import ConfReducer from './conf/reducer'
 import TopoReducer from './topo/reducer'
 import DispatcherReducer from './dispatcher/reducer'
 import NodeEditorReducer from './node-editor/reducer'
+import SearchReducer from './search/reducer'
 
 import { defaultItem } from '../content.items'
 
@@ -16,6 +17,7 @@ const subReducers = combineReducers({
     topo: TopoReducer,
     dispatcher: DispatcherReducer,
     editor: NodeEditorReducer,
+    search: SearchReducer,
 })
 
 const initState : any = {
