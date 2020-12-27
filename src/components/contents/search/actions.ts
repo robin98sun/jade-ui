@@ -6,16 +6,8 @@ export const hasShownErrorOfSearchFanout = (errTime: any) =>({
     data: errTime,
 })
 
-
-export const showNodeEditor = (node: TreeNode) => async (dispatch: any) => {
-    dispatch({
-        type: 'SHOW_NODE_EDITOR',
-        data: node,
-    })
-}
-
-export const closeNodeEditor = () => ({
-    type: 'CLOSE_NODE_EDITOR',
+export const closeSearchResult = () => ({
+    type: 'CLOSE_SEARCH_RESULT',
 })
 
 export const searchFanout = (node: TreeNode|undefined, collectiveCriteria: any, exclusiveCriteria: any) => async(dispatch: any) => {
@@ -48,9 +40,21 @@ export const searchFanout = (node: TreeNode|undefined, collectiveCriteria: any, 
         } else if (typeof msg !== 'object' || msg.Error) {
             throw Error(msg.Error || msg || 'search fanout failed')
         }
+        const searchResult = {
+                name: 'search results',
+                unfolded: true,
+                subnodes: msg.map((item: string)=>({
+                    name: item,
+                    attributes: {}
+                })),
+            }
         dispatch({
             type: 'SEARCH_FANOUT_SUCCEEDED',
-            data: msg,
+            data: searchResult,
+        })
+        dispatch({
+            type: 'GET_TOPOLOGY_SUCCEEDED',
+            data: searchResult,
         })
     } catch (e) {
         console.error('ERROR when searching fanout:', node, e)

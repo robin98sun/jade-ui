@@ -96,13 +96,6 @@ class NodeEditor extends Component<Props, State>{
         {
           this.props.config && this.props.config.data
           ? <Grid container spacing={3}>
-              <Grid item md={4} xs={12} >
-              <ObjectEditor
-                title='Basic Info'
-                subtitle={selfNodeName }
-                object={basicInfo}
-              />
-              </Grid>
             { nodes.map((nodeName, i) => (
                 <Grid item md={4} xs={12} key={'node-'+nodeName+'-'+i}>
                   <ObjectEditor
@@ -131,6 +124,13 @@ class NodeEditor extends Component<Props, State>{
                 </Grid>
               ))
             }
+            <Grid item md={4} xs={12} >
+              <ObjectEditor
+                title='Basic Info'
+                subtitle={selfNodeName }
+                object={basicInfo}
+              />
+            </Grid>
             </Grid>
           : null
         }

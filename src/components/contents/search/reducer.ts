@@ -15,8 +15,6 @@ export interface Message {
 const initState = {
     node: null,
     searchResult: null,
-    isShowingEditor: false,
-    editingNode: null,
 }
 
 const searchReducer = (state: any = initState, action: any) => {
@@ -37,6 +35,7 @@ const searchReducer = (state: any = initState, action: any) => {
         })
         thisState = Object.assign({}, state, {
             searchResult: searchState,
+            isShowingSearchResult: false,
         })
         break
     case 'SEARCH_FANOUT_FAILED':
@@ -47,6 +46,7 @@ const searchReducer = (state: any = initState, action: any) => {
         })
         thisState = Object.assign({}, state, {
             searchResult: searchState,
+            isShowingSearchResult: false,
         })
         break
     case 'SEARCH_FANOUT_ERROR_HAS_SHOWN':
@@ -55,6 +55,7 @@ const searchReducer = (state: any = initState, action: any) => {
         })
         thisState = Object.assign({}, state, {
             searchResult: searchState,
+            isShowingSearchResult: false,
         })
         break
     case 'SEARCH_FANOUT_SUCCEEDED':
@@ -64,16 +65,12 @@ const searchReducer = (state: any = initState, action: any) => {
         })
         thisState = Object.assign({}, state, {
             searchResult: searchState,
+            isShowingSearchResult: true
         })
         break
-    case 'SHOW_NODE_EDITOR': 
+    case 'CLOSE_SEARCH_RESULT':
         thisState = Object.assign({}, state, {
-            isShowingEditor: true,
-            editingNode: action.data,
-        })
-        break
-    case 'CLOSE_NODE_EDITOR':
-        thisState = Object.assign({}, state, {
+            isShowingSearchResult: false,
             isShowingEditor: false,
             editingNode: undefined,
         })

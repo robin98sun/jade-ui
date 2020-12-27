@@ -16,10 +16,12 @@ import DialogForm from '../../gears/dialog-form'
 import NodeEditor from '../node-editor'
 import ObjectEditor from '../../gears/object-editor'
 
+import TopoPage from '../topo'
+
+
 import { 
   hasShownErrorOfSearchFanout, 
-  showNodeEditor,
-  closeNodeEditor,
+  closeSearchResult,
   searchFanout,
 } from './actions'
 import { Message } from './reducer'
@@ -27,26 +29,36 @@ import { Message } from './reducer'
 interface Props {
   style?: any
   node?: TreeNode
-  isShowingNodeEditor?:boolean
   isShowingSearchResult?: boolean
   searchResult?: Message
-  editingNode?: TreeNode
   hasShownErrorOfSearchFanout?(errTime: number): any
-  showNodeEditor?(node: TreeNode): any
-  closeNodeEditor?(): any
+  closeSearchResult?(): any
   searchFanout?(node: TreeNode|undefined, collectiveCriteria: any, exclusiveCriteria: any):any
+  onCriteriaChange?(collective:{name: string, value: any}[], exclusive:{name: string, value: any}[]): any
 }
 
 interface State {
-  collectiveCriteria: any
-  exclusiveCriteria: any
+  collectiveCriteria: {name: string, value: any}[]
+  exclusiveCriteria: {name: string, value: any}[]
 }
-class ContentTopo extends Component<Props>{
+class ContentTopo extends Component<Props, State>{
 
-  private collectiveCriteria: any
-  private exclusiveCriteria: any
+  private collectiveCriteria: {name: string, value: any}[]
+  private exclusiveCriteria: {name: string, value: any}[]
+
+  constructor(props: Props) {
+    super(props)
+    this.collectiveCriteria=[]
+    this.exclusiveCriteria=[]
+    this.state={
+      collectiveCriteria: [],
+      exclusiveCriteria: [],
+    }
+  }
+
   componentDidMount() {
   }
+
 
   dismissErrorMsg() {
     if (this.props.hasShownErrorOfSearchFanout && this.props.searchResult && this.props.searchResult.errTime) {
@@ -54,15 +66,9 @@ class ContentTopo extends Component<Props>{
     }
   }
 
-  onClickNode(node: TreeNode) {
-    if (this.props.showNodeEditor) {
-      this.props.showNodeEditor(node)
-    }
-  }
-
-  onCloseEditor() {
-    if (this.props.closeNodeEditor) {
-      this.props.closeNodeEditor()
+  onCloseSearchResult() {
+    if (this.props.closeSearchResult) {
+      this.props.closeSearchResult()
     }
   }
 
@@ -72,11 +78,17 @@ class ContentTopo extends Component<Props>{
     } else if (type === 'exclusive') {
       this.exclusiveCriteria = criteria
     }
+    if (this.props.onCriteriaChange) {
+      this.props.onCriteriaChange(this.collectiveCriteria, this.exclusiveCriteria)
+    }
   }
 
   onSearch() {
-    console.log('search: collective:', this.collectiveCriteria, 'exclusive:', this.exclusiveCriteria)
     if (this.props.searchFanout) {
+      this.setState({
+        collectiveCriteria: this.collectiveCriteria,
+        exclusiveCriteria: this.exclusiveCriteria,
+      })
       this.props.searchFanout(this.props.node, this.collectiveCriteria, this.exclusiveCriteria)
     }
   }
@@ -102,21 +114,21 @@ class ContentTopo extends Component<Props>{
 
         <Grid container spacing={2}>
         {
-          !this.props.isShowingNodeEditor && !this.props.isShowingSearchResult 
+          !this.props.isShowingSearchResult 
           ? <Grid item xs={12} >
               <Button
                 fullWidth
                 variant="contained"
                 onClick={this.onSearch.bind(this)}
               >
-                <PageviewOutlinedIcon />
+                <PageviewOutlinedIcon style={{marginRight:20}}/> Fanout
               </Button>
             </Grid> 
           : null
         }
 
         {
-          !this.props.isShowingNodeEditor && !this.props.isShowingSearchResult
+          !this.props.isShowingSearchResult
           ? requirementTypes.map((reqType, i)=>{
               return (
                 <Grid item sm={6} xs={12} key={reqType+'-'+i}>
@@ -127,7 +139,12 @@ class ContentTopo extends Component<Props>{
                     editablePropName
                     arrayOfkeyValuePairs
                     appendPropButtonText="Add Criteria"
-                    // keyValuePairs={[]}
+                    keyValuePairs={
+                      ((reqType === 'collective'?this.state.collectiveCriteria: this.state.exclusiveCriteria)||[]).map(item=>({
+                        key: item.name,
+                        value: item.value,
+                      }))
+                    }
                     onChange={(newData: {key: string, value: any}[], propName: string, value: any) => {
                       this.onCriteriaChange.call(this, reqType, newData.map(item=>({
                         name: item.key,
@@ -142,27 +159,18 @@ class ContentTopo extends Component<Props>{
           : null
         }
         {
-          this.props.isShowingSearchResult
-          ? <TreeView
-              root={this.props.searchResult?this.props.searchResult.data:null}
-              onClick={this.onClickNode.bind(this)}
+          this.props.isShowingSearchResult && this.props.searchResult && this.props.searchResult.data
+          ? <DialogForm
+              open={this.props.isShowingSearchResult||false}
+              title="Fanout subnodes"
+              contentView={
+                <TopoPage disableAutoRefresh />
+              }
+              onClose={this.onCloseSearchResult.bind(this)}
             />
           : null
         }
         </Grid>
-        {
-          this.props.isShowingNodeEditor
-          ? <Fade in={this.props.isShowingNodeEditor} timeout={1500}>
-            <DialogForm
-              open={this.props.isShowingNodeEditor||false}
-              title={this.props.editingNode ? this.props.editingNode.name:''}
-              contentView={<NodeEditor node={this.props.editingNode} forceRefreshWhenSwitching />}
-              onClose={this.onCloseEditor.bind(this)}
-            />
-            </Fade>
-          : null
-        }
-        
       </div>
     );
   }
@@ -172,7 +180,6 @@ export default connect(
   (state: any)=>state.app.content.search||{},
   { 
     hasShownErrorOfSearchFanout, 
-    showNodeEditor, closeNodeEditor,
-    searchFanout,
+    searchFanout, closeSearchResult,
   },
 )(ContentTopo);

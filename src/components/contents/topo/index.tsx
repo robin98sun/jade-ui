@@ -32,12 +32,14 @@ interface Props {
   topology?: Message,
   isShowingEditor?:boolean
   editingNode?: TreeNode
+  disableAutoRefresh?: boolean
 }
 
 class ContentTopo extends Component<Props>{
 
   componentDidMount() {
-    if (this.props.getTopology) {
+    console.log('topology:', this.props.topology)
+    if (this.props.getTopology && !this.props.disableAutoRefresh) {
       const addr = this.props.currentNode ? this.props.currentNode.addr ||'': ''
       const port = this.props.currentNode ? this.props.currentNode.port||0: 0
       const token = this.props.currentNode ? this.props.currentNode.token||'': ''
@@ -53,7 +55,7 @@ class ContentTopo extends Component<Props>{
   }
 
   onClickNode(node: TreeNode) {
-    if (this.props.showNodeEditor) {
+    if (node.name !=='search results' && this.props.showNodeEditor) {
       this.props.showNodeEditor(node)
     }
   }

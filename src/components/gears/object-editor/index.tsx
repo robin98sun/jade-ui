@@ -12,7 +12,6 @@ import {
   IconButton,
   Theme,
   Grid,
-  Fade,
 } from '@material-ui/core'
 
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
@@ -306,7 +305,12 @@ class ObjectEditor extends Component<Props, State> {
         this.keyValuePairs=this.copyKeyValuePaires(kvp)
         this.setState({
           keyValuePairs: kvp,
+          modified: true,
         })
+
+        if (this.props.onChange) {
+          this.props.onChange(kvp, propName, undefined)
+        }
       }
     } else {
       let removedKey = propName
