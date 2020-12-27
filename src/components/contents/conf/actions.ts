@@ -10,6 +10,7 @@ export const connectedWithServer = (config: any) => async(dispatch: any) => {
                 protocol: config.selfNode.protocol,
                 hostname: config.selfNode.hostname,
                 config: config,
+                trigger: 'conf',
             }
         })  
     }

@@ -2,10 +2,11 @@ import {
   SettingsEthernet as SettingsEthernetIcon,
   Info as InfoIcon,
   Settings as SettingsIcon,
-  OpenWith as OpenWithIcon,
   SendOutlined as SendOutlinedIcon,
 } from '@material-ui/icons'
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 export const contentItems: {
                              [key:string]:{
@@ -18,18 +19,24 @@ export const contentItems: {
             title: 'Node Info',
             icon: SettingsIcon,
         },
+    },
+    {
         dispatcher: {
             title: 'Dispatch Task',
             icon: SendOutlinedIcon,
+        },
+        example: {
+          title: 'Example Task',
+          icon: AssignmentIcon,
         },
     },
     {
         topo: { 
             title: 'Topology',
-            icon: OpenWithIcon,
+            icon: AccountTreeIcon,
         },
         search: {
-            title: 'Search',
+            title: 'Search Fanout',
             icon: SearchOutlinedIcon,
         }
     },

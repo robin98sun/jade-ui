@@ -9,8 +9,10 @@ import {
   Backdrop,
   Grid,
   IconButton,
+  Typography,
 } from '@material-ui/core'
 import CancelPresentationOutlinedIcon from '@material-ui/icons/CancelPresentationOutlined';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 
 interface Props {
   // contentName?: string
@@ -20,6 +22,7 @@ interface Props {
   message?:string
   title?:string
   contentView?: any
+  onSubmit?():any
 }
 
 interface State {
@@ -80,15 +83,39 @@ class DialogForm extends Component<Props, State>{
       >
         <DialogTitle id="scroll-dialog-title">
         <Grid container>
-          <Grid item xs={11}>
-          {this.props.title?this.props.title:''}
+          <Grid item 
+            md={10} 
+            sm={this.props.onSubmit?9:10} 
+            xs={this.props.onSubmit?7:10}
+          >
+            <Typography
+              variant="h6"
+              noWrap
+            >
+            {this.props.title?this.props.title:''}
+            </Typography>
           </Grid>
-          <Grid item xs={1} 
+          <Grid item 
+            md={2} 
+            sm={this.props.onSubmit?3:2} 
+            xs={this.props.onSubmit?5:2} 
             style={{
               textAlign:'right',
-              marginTop: -9,
+              marginTop: -10,
             }}
           >
+          {
+            this.props.onSubmit
+            ? <IconButton
+                style={{
+                  alignSelf: 'right',
+                }}
+                onClick={this.props.onSubmit?this.props.onSubmit:()=>{}}
+              >
+                <CheckCircleOutlineIcon color="primary" />
+              </IconButton>
+            : null
+          }
           {
             this.props.onClose
             ? <IconButton

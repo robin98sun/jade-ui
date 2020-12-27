@@ -4,16 +4,14 @@ import { connect } from 'react-redux'
 
 import {
   Grid,
-  Fade,
   Button,
 } from '@material-ui/core'
 import PageviewOutlinedIcon from '@material-ui/icons/PageviewOutlined';
 
 import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
-import TreeView, {TreeNode} from '../../gears/tree-view'
+import {TreeNode} from '../../gears/tree-view'
 import DialogForm from '../../gears/dialog-form'
-import NodeEditor from '../node-editor'
 import ObjectEditor from '../../gears/object-editor'
 
 import TopoPage from '../topo'
@@ -42,6 +40,7 @@ interface Props {
 interface State {
   collectiveCriteria: {name: string, value: any}[]
   exclusiveCriteria: {name: string, value: any}[]
+  modified: boolean
 }
 class ContentTopo extends Component<Props, State>{
 
@@ -55,11 +54,18 @@ class ContentTopo extends Component<Props, State>{
     this.state={
       collectiveCriteria: [],
       exclusiveCriteria: [],
+      modified: false
     }
   }
 
-  // static getDerivedStateFromProps(props: Props, state: State) {
-  // }
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (state.modified) return state
+
+    return Object.assign({},state,{
+      collectiveCriteria: props.collectiveCriteria,
+      exclusiveCriteria: props.exclusiveCriteria,
+    })
+  }
 
   componentDidMount() {
     if (this.collectiveCriteria.length || this.exclusiveCriteria.length) {
@@ -104,6 +110,7 @@ class ContentTopo extends Component<Props, State>{
       this.setState({
         collectiveCriteria: this.collectiveCriteria,
         exclusiveCriteria: this.exclusiveCriteria,
+        modified: true,
       })
       this.props.searchFanout(this.props.node, this.collectiveCriteria, this.exclusiveCriteria)
     }

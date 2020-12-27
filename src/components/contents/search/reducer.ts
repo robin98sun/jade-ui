@@ -1,5 +1,4 @@
 // import { combineReducers } from 'redux'
-import { TreeNode } from '../../gears/tree-view'
 
 export interface Message {
     data?: any

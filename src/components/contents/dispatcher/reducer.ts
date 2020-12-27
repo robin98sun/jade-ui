@@ -28,9 +28,32 @@ const dispatcherReducer = (state: any = initState, action: any) => {
                 attributes: action.data,
             }
         })
-    case 'DISPATCH_TASK_BEGIN':
+    case 'DISPATCH_TASK_TO_CONFIRM':
         dispatchResult = Object.assign({}, state.dispatchResult, {
-            isUpdating: true
+            isUpdating: false, 
+            isFetching: true,
+            data: action.data,
+            error: null,
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_CONFIRMED':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            isUpdating: true,
+            isFetching: false,
+            data: null,
+            error: null,
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_CANCELED':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            isUpdating: false,
+            isFetching: false,
+            data: null,
+            error: null,
         })
         return Object.assign({}, state, {
             dispatchResult,
@@ -38,7 +61,17 @@ const dispatcherReducer = (state: any = initState, action: any) => {
     case 'DISPATCH_TASK_SUCCEEDED':
         dispatchResult = Object.assign({}, state.dispatchResult, {
             isUpdating: false,
+            isFetching: false,
             data: action.data,
+            dataTime: Date.now(),
+            error: null,
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_RESULT_HAS_SHOWN':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            hasShownDataTime: action.data,
         })
         return Object.assign({}, state, {
             dispatchResult,
@@ -46,6 +79,8 @@ const dispatcherReducer = (state: any = initState, action: any) => {
     case 'DISPATCH_TASK_FAILED':
         dispatchResult = Object.assign({}, state.dispatchResult, {
             isUpdating: false,
+            isFetching: false,
+            data: null,
             error: action.data,
             errTime: Date.now(),
         })

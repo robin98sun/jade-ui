@@ -38,7 +38,6 @@ interface Props {
 class ContentTopo extends Component<Props>{
 
   componentDidMount() {
-    console.log('topology:', this.props.topology)
     if (this.props.getTopology && !this.props.disableAutoRefresh) {
       const addr = this.props.currentNode ? this.props.currentNode.addr ||'': ''
       const port = this.props.currentNode ? this.props.currentNode.port||0: 0
