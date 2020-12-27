@@ -35,6 +35,8 @@ interface Props {
   closeSearchResult?(): any
   searchFanout?(node: TreeNode|undefined, collectiveCriteria: any, exclusiveCriteria: any):any
   onCriteriaChange?(collective:{name: string, value: any}[], exclusive:{name: string, value: any}[]): any
+  collectiveCriteria?: {name: string, value: any}[]
+  exclusiveCriteria?: {name: string, value: any}[]
 }
 
 interface State {
@@ -56,7 +58,21 @@ class ContentTopo extends Component<Props, State>{
     }
   }
 
+  // static getDerivedStateFromProps(props: Props, state: State) {
+  // }
+
   componentDidMount() {
+    if (this.collectiveCriteria.length || this.exclusiveCriteria.length) {
+      this.collectiveCriteria = []
+      this.exclusiveCriteria = []
+      this.setState({
+        collectiveCriteria: [],
+        exclusiveCriteria: [],
+      })
+    }
+  }
+
+  componentDidUpdate() {
   }
 
 
@@ -99,78 +115,85 @@ class ContentTopo extends Component<Props, State>{
     const requirementTypes = ['collective', 'exclusive']
     return (
       <div className="content-search" style={introStyle}>
-        <ModalStatus 
-          open={(this.props.searchResult && this.props.searchResult.isFetching) ||false}
-          message={this.props.searchResult && this.props.searchResult.isFetching ? "searching...": "loading..."}
-          progressIcon={<ProgressIcon isRunning />}
-        />
-
-        <ModalStatus 
-          open={(this.props.searchResult && this.props.searchResult.errTime && this.props.searchResult.errTime !== this.props.searchResult.hasShownErrTime)||false}
-          title="ERROR"
-          message={this.props.searchResult ? this.props.searchResult.error:''}
-          onClose={this.dismissErrorMsg.bind(this)}
-        />
-
-        <Grid container spacing={2}>
-        {
-          !this.props.isShowingSearchResult 
-          ? <Grid item xs={12} >
-              <Button
-                fullWidth
-                variant="contained"
-                onClick={this.onSearch.bind(this)}
-              >
-                <PageviewOutlinedIcon style={{marginRight:20}}/> Fanout
-              </Button>
-            </Grid> 
-          : null
-        }
-
-        {
-          !this.props.isShowingSearchResult
-          ? requirementTypes.map((reqType, i)=>{
-              return (
-                <Grid item sm={6} xs={12} key={reqType+'-'+i}>
-                  <ObjectEditor 
-                    subtitle={reqType.toUpperCase()}
-                    inputMode
-                    canAppendProperties
-                    editablePropName
-                    arrayOfkeyValuePairs
-                    appendPropButtonText="Add Criteria"
-                    keyValuePairs={
-                      ((reqType === 'collective'?this.state.collectiveCriteria: this.state.exclusiveCriteria)||[]).map(item=>({
-                        key: item.name,
-                        value: item.value,
-                      }))
-                    }
-                    onChange={(newData: {key: string, value: any}[], propName: string, value: any) => {
-                      this.onCriteriaChange.call(this, reqType, newData.map(item=>({
-                        name: item.key,
-                        value: item.value,
-                      })))
-                    }}
-                  />
-                </Grid>
-              )
-            })
-            
-          : null
-        }
-        {
-          this.props.isShowingSearchResult && this.props.searchResult && this.props.searchResult.data
-          ? <DialogForm
-              open={this.props.isShowingSearchResult||false}
-              title="Fanout subnodes"
-              contentView={
-                <TopoPage disableAutoRefresh />
-              }
-              onClose={this.onCloseSearchResult.bind(this)}
+      {
+        this.props.node && this.props.node.name
+        ? <div>
+            <ModalStatus 
+              open={(this.props.searchResult && this.props.searchResult.isFetching) ||false}
+              message={this.props.searchResult && this.props.searchResult.isFetching ? "searching...": "loading..."}
+              progressIcon={<ProgressIcon isRunning />}
             />
-          : null
-        }
-        </Grid>
+
+            <ModalStatus 
+              open={(this.props.searchResult && this.props.searchResult.errTime && this.props.searchResult.errTime !== this.props.searchResult.hasShownErrTime)||false}
+              title="ERROR"
+              message={this.props.searchResult ? this.props.searchResult.error:''}
+              onClose={this.dismissErrorMsg.bind(this)}
+            />
+
+            <Grid container spacing={2}>
+            {
+              !this.props.isShowingSearchResult 
+              ? <Grid item xs={12} >
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={this.onSearch.bind(this)}
+                  >
+                    <PageviewOutlinedIcon style={{marginRight:20}}/> Fanout
+                  </Button>
+                </Grid> 
+              : null
+            }
+
+            {
+              !this.props.isShowingSearchResult
+              ? requirementTypes.map((reqType, i)=>{
+                  return (
+                    <Grid item sm={6} xs={12} key={reqType+'-'+i}>
+                      <ObjectEditor 
+                        subtitle={reqType.toUpperCase()}
+                        inputMode
+                        canAppendProperties
+                        editablePropName
+                        arrayOfkeyValuePairs
+                        appendPropButtonText="Add Criteria"
+                        keyValuePairs={
+                          ((reqType === 'collective'?this.state.collectiveCriteria: this.state.exclusiveCriteria)||[]).map(item=>({
+                            key: item.name,
+                            value: item.value,
+                          }))
+                        }
+                        onChange={(newData: {key: string, value: any}[], propName: string, value: any) => {
+                          this.onCriteriaChange.call(this, reqType, newData.map(item=>({
+                            name: item.key,
+                            value: item.value,
+                          })))
+                        }}
+                      />
+                    </Grid>
+                  )
+                })
+                
+              : null
+            }
+            {
+              this.props.isShowingSearchResult && this.props.searchResult && this.props.searchResult.data
+              ? <DialogForm
+                  open={this.props.isShowingSearchResult||false}
+                  title="Fanout subnodes"
+                  contentView={
+                    <TopoPage disableAutoRefresh />
+                  }
+                  onClose={this.onCloseSearchResult.bind(this)}
+                />
+              : null
+            }
+            </Grid>
+          </div>
+        : null
+      }
+        
       </div>
     );
   }

@@ -1,9 +1,64 @@
+
+export interface Message {
+    data?: any
+    isFetching?: boolean
+    isUpdating?: boolean
+    dataTime?: number
+    hasShownDataTime?: number
+    error?: string
+    errTime?: number
+    hasShownErrTime?: number
+}
+
 const initState = {
-    
+   dispatchResult: {
+       isFetching: false,
+       isUpdating: false,
+   },
+   node: null
 }
 
 const dispatcherReducer = (state: any = initState, action: any) => {
+    let dispatchResult: any = null
     switch (action.type) {
+    case 'CONNECT_NODE':
+        return Object.assign({}, state, {
+            node: {
+                name: `${action.data.protocol}://${action.data.hostname||action.data.addr}:${action.data.port}`,
+                attributes: action.data,
+            }
+        })
+    case 'DISPATCH_TASK_BEGIN':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            isUpdating: true
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_SUCCEEDED':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            isUpdating: false,
+            data: action.data,
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_FAILED':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            isUpdating: false,
+            error: action.data,
+            errTime: Date.now(),
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
+    case 'DISPATCH_TASK_ERROR_HAS_SHOWN':
+        dispatchResult = Object.assign({}, state.dispatchResult, {
+            hasShownErrTime: action.data,
+        })
+        return Object.assign({}, state, {
+            dispatchResult,
+        })
     default:
         return state
         // break

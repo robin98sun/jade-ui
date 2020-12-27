@@ -21,6 +21,7 @@ interface Props {
   fetchNodeConfig?(node: TreeNode|null|undefined):any
   updateNodeConfig?(node: TreeNode|null|undefined, config: any): any
   hasShownErrorOfFetchNodeConfig?(errTime: number):any
+  onConfigReady?(config: any): any
 }
 
 interface State {
@@ -37,6 +38,15 @@ class NodeEditor extends Component<Props, State>{
   componentDidMount() {
     if (this.props.fetchNodeConfig) {
       this.props.fetchNodeConfig(this.props.node)
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.onConfigReady 
+      && this.props.config && this.props.config.data
+      && (!this.props.config.error || this.props.config.errTime === this.props.config.hasShownErrTime)
+      ) {
+      this.props.onConfigReady(this.props.config.data)
     }
   }
 

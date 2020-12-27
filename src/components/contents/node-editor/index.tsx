@@ -21,6 +21,7 @@ interface Props {
   style?: any
   node?: TreeNode
   forceRefreshWhenSwitching?: boolean
+  onConfigReady?(config: any):any
 }
 
 interface State {
@@ -67,7 +68,10 @@ class NodeEditor extends Component<Props, State>{
           this.state.currentTab===0 || !this.props.forceRefreshWhenSwitching
           ? <Fade in={this.state.currentTab===0}>
             <div >
-              <ConfigurationsPage node={this.props.node}/>
+              <ConfigurationsPage 
+                node={this.props.node}
+                onConfigReady={this.props.onConfigReady}
+              />
             </div>
             </Fade>
           : null

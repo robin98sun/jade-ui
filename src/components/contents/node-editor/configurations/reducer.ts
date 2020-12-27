@@ -23,6 +23,7 @@ const configPageReducer = (state: any = initState, action: any) => {
             isFetching: false,
             data: action.data,
             dataTime: Date.now(),
+            error: null,
         })
         thisState = Object.assign({}, state, {
             config: configState,

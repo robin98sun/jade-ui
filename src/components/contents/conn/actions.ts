@@ -28,13 +28,15 @@ export const connectNode = (addr:string, port: number, token: string, targetPage
         } else if (typeof msg !== 'object' || msg.Error) {
             throw Error(msg.Error || msg || 'connection failed')
         }
+
         dispatch({
             type: 'CONNECT_NODE',
             data: {
-                addr,
-                port,
-                token,
-                protocol,
+                addr: msg&&msg.selfNode?msg.selfNode.address:addr,
+                port: msg&&msg.selfNode?msg.selfNode.port:port,
+                token: msg&&msg.selfNode?msg.selfNode.token:token,
+                protocol: msg&&msg.selfNode?msg.selfNode.protocol:protocol,
+                hostname: msg&&msg.selfNode?msg.selfNode.hostname:addr,
                 config: msg,
             }
         })

@@ -3,14 +3,16 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 
 import NodeEditor from '../node-editor'
-
-
+import {
+  connectedWithServer,
+} from './actions'
 
 interface Props {
-  currentNode?: object
+  currentNode?: any
   style?: any
   drawMenuOpen?:boolean
   isFocusing?: boolean
+  connectedWithServer?(config: any):any
 }
 
 interface State {
@@ -40,6 +42,14 @@ class ContentConf extends Component<Props, State>{
     })
   }
 
+  onConfigReady(config: any) {
+      
+    if(this.props.connectedWithServer 
+      && (!this.props.currentNode||!this.props.currentNode.name)) {
+      this.props.connectedWithServer(config)
+    }
+  }
+
   render() {
     const confStyle = Object.assign({}, {
       marginRight: this.props.drawMenuOpen ? 230:-5,
@@ -52,6 +62,7 @@ class ContentConf extends Component<Props, State>{
         this.state.canShowContent && this.props.currentNode
         ? <NodeEditor 
             node={this.props.currentNode}
+            onConfigReady={this.onConfigReady.bind(this)}
             style={{
               marginTop: 10,
             }}
@@ -66,5 +77,5 @@ class ContentConf extends Component<Props, State>{
 
 export default connect(
   (state: any)=>state.app.content.conf||{},
-  null,
+  {connectedWithServer},
 )(ContentConf);
