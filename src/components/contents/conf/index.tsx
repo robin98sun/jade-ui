@@ -52,9 +52,9 @@ class ContentConf extends Component<Props, State>{
 
   render() {
     const confStyle = Object.assign({}, {
-      marginRight: this.props.drawMenuOpen ? 230:-5,
-      transition: 'marginRight 0.4s',
-      transitionTimingFunction: 'ease-in-out',
+      // marginRight: this.props.drawMenuOpen ? 230:-5,
+      // transition: 'marginRight 0.4s',
+      // transitionTimingFunction: 'ease-in-out',
     }, this.props.style)
     return (
       <div className="content-conf" style={confStyle}>
