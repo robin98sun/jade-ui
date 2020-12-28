@@ -2,6 +2,7 @@ import { Task } from '../dispatcher/actions'
 import latestVersion from '../../../version.json'
 export interface TemplateOptions {
     cmd: string, 
+    version: string,
     queuing: string,
     minServiceTime: number,
     maxServiceTime: number,
@@ -13,7 +14,7 @@ export const plankton = (options: TemplateOptions) => {
     const taskSimple: Task = {
         application: {
             name: 'jade-example',
-            version: latestVersion.version,
+            version: options.version,
             owner: 'aces.uta.edu',
         }, 
         budget: {

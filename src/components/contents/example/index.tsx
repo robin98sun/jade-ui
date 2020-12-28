@@ -24,6 +24,7 @@ const initState: State = {
   task: null, 
   options: {
     cmd: 'service time',
+    version: '1.0.0',
     minServiceTime: 10000,
     maxServiceTime: 30000,
     workloadSize: 100,
