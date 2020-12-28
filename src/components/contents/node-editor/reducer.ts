@@ -3,17 +3,11 @@ import { combineReducers } from 'redux'
 import ConfigPageReducer from './configurations/reducer'
 import CapabilitiesReducer from './capabilities/reducer'
 import CapacitiesReducer from './capacities/reducer'
-import TasksReducer from './tasks/reducer'
-import PodsReducer from './pods/reducer'
-import StatsReducer from './stats/reducer'
 
 const subReducerSchema = {
     config: ConfigPageReducer,
     capabilities: CapabilitiesReducer,
     capacities: CapacitiesReducer,
-    tasks: TasksReducer,
-    pods: PodsReducer,
-    stats: StatsReducer,
 }
 
 const subReducers = combineReducers(subReducerSchema)

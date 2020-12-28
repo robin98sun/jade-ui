@@ -7,6 +7,9 @@ import {
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
+import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 
 export const contentItems: {
                              [key:string]:{
@@ -28,6 +31,18 @@ export const contentItems: {
         example: {
           title: 'Example Task',
           icon: AssignmentIcon,
+        },
+        showTasks: {
+          title: 'Show Tasks',
+          icon: FormatListNumberedIcon,
+        },
+        showStat: {
+          title: 'Show Stat',
+          icon: EqualizerIcon,
+        },
+        showPods: {
+          title: 'Show Pods',
+          icon: ViewComfyIcon,
         },
     },
     {

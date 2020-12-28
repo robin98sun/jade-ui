@@ -1,13 +1,18 @@
-import { TreeNode } from '../../../gears/tree-view'
-export const fetchNodeConfig = (node: TreeNode|null|undefined) => async (dispatch: any) => {
+import { TreeNode } from '../../gears/tree-view'
+
+export const hasShownFetchPodsError = (errTime: number) => ({
+    type: 'FETCH_POD_CACHE_ERROR_HAS_SHOWN',
+    data: errTime,
+})
+
+export const fetchPodCache = (node: TreeNode) => async(dispatch: any) => {
     dispatch({
-        type: 'FETCH_NODE_CONFIG_BEGIN',
-        data: node,
+        type: 'FETCH_POD_CACHE_BEGIN',
     })
 
     try {
         const baseUrl = node && node.name ? node.name : ''
-        const url = `${baseUrl}/$jade$/debug/configurations`
+        const url = `${baseUrl}/$jade$/debug/podCache`
         const res = await fetch(url, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
@@ -21,19 +26,19 @@ export const fetchNodeConfig = (node: TreeNode|null|undefined) => async (dispatc
         const msg = await res.json()
 
         if (!msg) {
-            throw Error('invalid response from remote node')
+            throw Error('invalid response')
         } else if (typeof msg !== 'object' || msg.Error) {
-            throw Error(msg.Error || msg || 'connection failed')
+            throw Error(msg.Error || msg || 'fetch task cache failed')
         }
         dispatch({
-            type: 'FETCH_NODE_CONFIG_SUCCEEDED',
+            type: 'FETCH_POD_CACHE_SUCCEEDED',
             data: msg,
         })
     } catch (e) {
-        console.error('ERROR when fetching configurations', node, e)
         dispatch({
-            type: 'FETCH_NODE_CONFIG_FAILED',
+            type: 'FETCH_POD_CACHE_FAILED',
             data: e.message,
         })
     }
+
 }

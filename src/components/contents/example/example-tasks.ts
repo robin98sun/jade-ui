@@ -1,10 +1,19 @@
 import { Task } from '../dispatcher/actions'
-
-export const plankton = (type: string, version: string) => {
+export interface TemplateOptions {
+    cmd: string, 
+    version: string,
+    queuing: string,
+    minServiceTime: number,
+    maxServiceTime: number,
+    workloadSize: number,
+    aggregatorTime: number,
+    aggregatorFactor: number,
+}
+export const plankton = (options: TemplateOptions) => {
     const taskSimple: Task = {
         application: {
-            name: 'sample',
-            version: version,
+            name: 'plankton',
+            version: options.version,
             owner: 'aces.uta.edu',
         }, 
         budget: {
@@ -12,19 +21,23 @@ export const plankton = (type: string, version: string) => {
         }, 
         options: {
             updateNetwork: false,
-            queuing: 'ddl',
+            queuing: options.queuing,
         }, 
         aggregator: {
-            image: `robin98/plankton:${version}-amd64`,
+            image: `robin98/plankton:${options.version}-amd64`,
             port: 8080,
             input: {},
         }, 
         worker: {
-            image: `robin98/plankton:${version}-arm32`,
+            image: `robin98/plankton:${options.version}-arm32`,
             port: 8080,
             input: {
-                "cmd": "gen and merge",
-                "size": 100
+                "cmd": options.cmd,
+                "size": options.workloadSize,
+                "maxEatTime": options.maxServiceTime,
+                "minEatTime": options.minServiceTime,
+                "digestTime": options.aggregatorTime,
+                "digestFactor": options.aggregatorFactor,
             }
         },
         fanout: {
@@ -65,8 +78,6 @@ export const plankton = (type: string, version: string) => {
     }
 
     let task: Task = Object.assign({}, taskSimple)
-    if (type === 'simple') {
-        
-    }
+
     return task
 }

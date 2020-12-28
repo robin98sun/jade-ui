@@ -10,6 +10,9 @@ import ContentTopo from './topo'
 import ContentDispatcher from './dispatcher'
 import ContentSearch from './search'
 import ContentExample from './example'
+import ContentTasks from './tasks'
+import ContentPods from './pods'
+import ContentStat from './stat'
 
 interface Props {
   contentName?: string
@@ -38,6 +41,12 @@ class Contents extends Component<Props>{
       return <ContentSearch />
     case 'example':
       return <ContentExample />
+    case 'showTasks': 
+      return <ContentTasks />
+    case 'showPods': 
+      return <ContentPods />
+    case 'showStat':
+      return <ContentStat />
     default:
       return null
     }

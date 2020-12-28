@@ -7,6 +7,7 @@ import {
   Fade,
   Grid,
   Typography,
+  Button,
 } from '@material-ui/core'
 
 import {
@@ -21,6 +22,9 @@ interface Props {
   title?:string
   message?:string
   progressIcon?:any
+  onConfirm?():any
+  confirmIcon?:any
+  cancelIcon?:any
 }
 
 class ModalStatus extends Component<Props>{
@@ -92,6 +96,74 @@ class ModalStatus extends Component<Props>{
                     this.props.message
                     ? <p id="transition-modal-description">{this.props.message}</p>
                     : null
+                  }
+                  {
+                    (this.props.onConfirm)
+                    &&((this.props.onClose))
+                    ?  <Grid container alignItems="center" style={{marginTop: 20}}>
+                        <Grid item 
+                          xs={
+                            (this.props.onClose)
+                            ? 5
+                            : 12
+                          } 
+                          style={{textAlign: "left"}}
+                        >
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            onClick={()=>{
+                              if (this.props.onConfirm) {
+                                this.props.onConfirm()
+                              }
+                            }}
+                          >
+                          {
+                            this.props.confirmIcon
+                            ? this.props.confirmIcon
+                            : null
+                          }
+                          OK
+                          </Button>
+                        </Grid>
+
+                        {
+                          (this.props.onConfirm)
+                          &&(this.props.onClose)
+                          ? <Grid item xs={2}>
+                            </Grid>
+                          : null
+                        }
+
+                        <Grid item 
+                          xs={
+                            (this.props.onConfirm)
+                            ? 5
+                            : 12
+                          } 
+                          style={{textAlign: "right"}}
+                        >
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            color="secondary"
+                            onClick={()=>{
+                              if (this.props.onClose) {
+                                this.props.onClose()
+                              }
+                            }}
+                          >
+                          {
+                            this.props.cancelIcon
+                            ? this.props.cancelIcon
+                            : null
+                          }
+                          Cancel
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    :null
                   }
                 </div>
               </Fade>

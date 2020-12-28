@@ -3,61 +3,128 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 
 import DispatcherView, { Props } from '../dispatcher'
-import { plankton } from './example-tasks'
+import { plankton, TemplateOptions } from './example-tasks'
 
 import {
-  Divider,
   Grid,
+  Button,
 } from '@material-ui/core'
+
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 import ObjectEditor from '../../gears/object-editor'
 
 interface State {
   task: any
-  exampleName: string
-  version: string
+  options: TemplateOptions
+  showDispatcher: boolean
 }
 
-const initState: any = {
-  task: null,
-  exampleName: 'simple-plankton',
-  version: '1.4.28.18.6.4'
+const initState: State = {
+  task: null, 
+  options: {
+    cmd: 'service time',
+    minServiceTime: 10000,
+    maxServiceTime: 30000,
+    workloadSize: 100,
+    version: '1.4.28.20.6.5',
+    queuing: 'ddl',
+    aggregatorTime: 0,
+    aggregatorFactor: 0,
+  },
+  showDispatcher: false,
 }
-
-initState.task = plankton(initState.exampleName, initState.version)
 
 class ContentExample extends Component<Props, State>{
+  private templateOptions: any
   constructor(props: Props) {
     super(props)
     this.state = initState
+    this.templateOptions = null
+  }
+  saveOrRestoreState() {
+    if (this.templateOptions) {
+      const resolvedState : any = Object.assign({}, this.state, {
+        options: this.templateOptions,
+        showDispatcher: false,
+      })
+      return resolvedState
+    } else {
+      return null
+    }
+  }
+
+  resolveState() {
+    const resolvedState = this.saveOrRestoreState()
+    if (resolvedState) {
+      this.setState(resolvedState)
+    }
+    this.templateOptions = null
   }
   componentDidMount() {
+    this.resolveState()
   }
   render() {
     const introStyle = Object.assign({}, {}, this.props.style||{})
     return (
       <div className="content-example" style={introStyle}>
-        <Grid container style={{marginBottom: 16}}>
-          <Grid item xs={12}>
+        <div >
+        <Grid container 
+          style={{marginBottom: 16}} 
+        >
+          <Grid item xs={12} hidden={this.state.showDispatcher}>
             <ObjectEditor
               inputMode
               subtitle="TEMPLATE OPTIONS"
-              object={{version: this.state.version}}
+              object={initState.options}
               onChange={(newObj:any)=>{
-                const version = newObj.version
-                const task = plankton(this.state.exampleName, version)
-                this.setState({
-                  task,
-                  version,
-                })
+                this.templateOptions = newObj
               }}
             />
           </Grid>
+          <Grid item xs={12} >
+            <Button
+              fullWidth
+              variant="contained"
+              style={{
+                marginTop: 15,
+                backgroundColor:"#33A033",
+              }}
+              onClick={()=>{
+                if (!this.state.showDispatcher) {
+                const resolvedState = Object.assign({}, this.state, this.saveOrRestoreState())
+                const task: any = plankton(
+                  resolvedState.options,
+                )
+                this.setState(Object.assign({}, this.state, resolvedState, {
+                  task,
+                  showDispatcher: true,
+                }))
+                } else {
+                  this.setState(Object.assign({}, this.state, {
+                    showDispatcher: false,
+                  }))
+                }
+              }}
+            >
+              <AssignmentIcon style={{marginRight: 20}}/> 
+              {
+                this.state.showDispatcher? "Regenerate" :"Generate Task"
+              }
+            </Button>
+          </Grid>
         </Grid>
-        <Divider style={{marginBottom: 15}}/>
+        </div>
+        <div hidden={!this.state.showDispatcher}>
         <DispatcherView 
           {...Object.assign({},this.props, this.state.task)}
+          onClose={()=> {
+            this.setState({
+              showDispatcher: false,
+            })
+          }}
         />
+        </div>
       </div>
     );
   }

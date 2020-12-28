@@ -54,6 +54,7 @@ export interface Props {
   dismissErrMsg?(errTime: number):any
   dismissDispatchingResult?(dataTime: number):any
   connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
+  onClose?():any
   dispatchResult?: any
 
   application?: any,
@@ -284,11 +285,17 @@ class ContentDispatcher extends Component<Props, State>{
     if (this.props.dismissErrMsg && this.props.dispatchResult) {
       this.props.dismissErrMsg(this.props.dispatchResult.errTime)
     }
+    if (this.props.onClose) {
+      this.props.onClose()
+    }
   }
 
   dismissResult() {
     if (this.props.dismissDispatchingResult && this.props.dispatchResult) {
       this.props.dismissDispatchingResult(this.props.dispatchResult.dataTime)
+    }
+    if (this.props.onClose) {
+      this.props.onClose()
     }
   }
 
@@ -401,6 +408,9 @@ class ContentDispatcher extends Component<Props, State>{
           onClose={()=>{
             if(this.props.cancelDispatching) {
               this.props.cancelDispatching()
+            }
+            if (this.props.onClose) {
+              this.props.onClose()
             }
           }}
           onSubmit={()=>{

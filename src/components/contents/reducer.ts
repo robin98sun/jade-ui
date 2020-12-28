@@ -8,6 +8,9 @@ import DispatcherReducer from './dispatcher/reducer'
 import NodeEditorReducer from './node-editor/reducer'
 import SearchReducer from './search/reducer'
 import ExampleReducer from './dispatcher/reducer'
+import TasksReducer from './tasks/reducer'
+import PodsReducer from './pods/reducer'
+import StatReducer from './stat/reducer'
 
 import { defaultItem } from '../content.items'
 
@@ -20,6 +23,9 @@ const subReducers = combineReducers({
     editor: NodeEditorReducer,
     search: SearchReducer,
     example: ExampleReducer,
+    tasks: TasksReducer,
+    pods: PodsReducer,
+    stat: StatReducer,
 })
 
 const initState : any = {
