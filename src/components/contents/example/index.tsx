@@ -31,6 +31,9 @@ const initState: State = {
     queuing: 'ddl',
     aggregatorTime: 0,
     aggregatorFactor: 0,
+    budgetMean: 0,
+    budgetVariance: 0,
+    budgetTarget: 0,
   },
   showDispatcher: false,
 }

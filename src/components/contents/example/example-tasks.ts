@@ -9,6 +9,9 @@ export interface TemplateOptions {
     workloadSize: number,
     aggregatorTime: number,
     aggregatorFactor: number,
+    budgetMean: number,
+    budgetVariance: number,
+    budgetTarget: number,
 }
 export const plankton = (options: TemplateOptions) => {
     const taskSimple: Task = {
@@ -18,6 +21,9 @@ export const plankton = (options: TemplateOptions) => {
             owner: 'aces.uta.edu',
         }, 
         budget: {
+            mean: options.budgetMean,
+            variance: options.budgetVariance,
+            target: options.budgetTarget,
             fanoutTable:[0,100, 300, 600, 1200, 1800, 2400, 3600]
         }, 
         options: {
