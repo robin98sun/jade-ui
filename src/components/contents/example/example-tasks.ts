@@ -1,7 +1,7 @@
 import { Task } from '../dispatcher/actions'
+import latestVersion from '../../../version.json'
 export interface TemplateOptions {
     cmd: string, 
-    version: string,
     queuing: string,
     minServiceTime: number,
     maxServiceTime: number,
@@ -12,8 +12,8 @@ export interface TemplateOptions {
 export const plankton = (options: TemplateOptions) => {
     const taskSimple: Task = {
         application: {
-            name: 'plankton',
-            version: options.version,
+            name: 'jade-example',
+            version: latestVersion.version,
             owner: 'aces.uta.edu',
         }, 
         budget: {
@@ -24,12 +24,12 @@ export const plankton = (options: TemplateOptions) => {
             queuing: options.queuing,
         }, 
         aggregator: {
-            image: `robin98/plankton:${options.version}-amd64`,
+            image: `robin98/plankton:${latestVersion.version}-amd64`,
             port: 8080,
             input: {},
         }, 
         worker: {
-            image: `robin98/plankton:${options.version}-arm32`,
+            image: `robin98/plankton:${latestVersion.version}-arm32`,
             port: 8080,
             input: {
                 "cmd": options.cmd,

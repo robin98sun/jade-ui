@@ -27,7 +27,6 @@ const initState: State = {
     minServiceTime: 10000,
     maxServiceTime: 30000,
     workloadSize: 100,
-    version: '1.4.28.20.6.5',
     queuing: 'ddl',
     aggregatorTime: 0,
     aggregatorFactor: 0,
