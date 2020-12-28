@@ -51,7 +51,7 @@ export const plankton = (options: TemplateOptions) => {
             collective: [
                 {
                     "name": "location",
-                    "value": "NYC"
+                    "value": "NY"
                 },
                 {
                     "name": "location",
