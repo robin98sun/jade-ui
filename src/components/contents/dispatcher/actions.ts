@@ -1,21 +1,32 @@
 import { TreeNode } from '../../gears/tree-view'
+import { switchContent } from '../../drawer-menu/actions'
 export interface Task {
-        application: any, 
-        budget: any, 
-        options: any, 
-        aggregator: any, 
-        worker: any, 
-        fanout: {
-            collective: any,
-            exclusive: any
-        }, 
-        resources: {
-          aggregator: any, 
-          worker: any,
-        }
-      }
+    application: any, 
+    budget: any, 
+    options: any, 
+    aggregator: any, 
+    worker: any, 
+    fanout: {
+        collective: any,
+        exclusive: any
+    }, 
+    resources: {
+      aggregator: any, 
+      worker: any,
+    }
+}    
 
-export const dispatchTask = (node: any, task: Task) => async(dispatch: any) => {
+export interface IterationSettings {
+  iteration_mode: 'Constant speed'|'Possion process',
+  arrival_rate: number,
+  duration: number,
+  time_unit: 'second'|'minute',
+}
+
+export const dispatchTask = (
+                node: any, 
+                task: Task, 
+              ) => async(dispatch: any) => {
     if (!node || !node.attributes || !node.attributes.token 
         ||!task || !task.application || !task.budget 
         || !task.aggregator || !task.worker || !task.fanout
@@ -101,14 +112,33 @@ export const cancelDispatching=()=>({
     type: 'DISPATCH_TASK_CANCELED',
 })
 
-export const confirmDispatching=(node: TreeNode, taskInst: any)=>async(dispatch:any)=> {
+export interface Timer { 
+    on: boolean, 
+    instance: any, 
+    count: number, 
+    start: number,
+    iteration: IterationSettings,
+}
 
-    dispatch({
-        type: 'DISPATCH_TASK_CONFIRMED',
-        data: taskInst,
-    })
-
+const dispatchTaskInst = async (
+        node: TreeNode, 
+        taskInst: any, 
+        dispatch: any,
+        actionName: string,
+        timer?: Timer,
+      ) => {
     try {
+        dispatch({
+            type: `${actionName}_${actionName==='DISPATCH_TASK'?'CONFIRMED':'TRIGGERED'}`,
+            data: timer
+                  ? {
+                        timer,
+                        task: taskInst,
+                    }
+                  : taskInst,
+        })
+        // if (timer) return 
+
         const baseUrl = node && node.name ? node.name : ''
         const url = `${baseUrl}/$jade$/taskReceiver`
         const res = await fetch(url, {
@@ -130,15 +160,96 @@ export const confirmDispatching=(node: TreeNode, taskInst: any)=>async(dispatch:
             throw Error(msg.Error || msg || 'search fanout failed')
         }
         dispatch({
-            type: 'DISPATCH_TASK_SUCCEEDED',
-            data: msg,
+            type: `${actionName}_SUCCEEDED`,
+            data: timer
+                  ? {
+                        timer,
+                        res: msg,
+                    }
+                  : taskInst,
         })
     } catch (e) {
-        console.error('ERROR when searching fanout:', node, e)
+        console.error('ERROR when dispatching task:', node, e)
         dispatch({
-            type: 'DISPATCH_TASK_FAILED',
-            data: e.message,
+            type: `${actionName}_FAILED`,
+            data: timer
+                  ? {
+                        timer,
+                        error: e.message,
+                    }
+                  : taskInst,
         })
+    }
+}
+
+export const confirmDispatching=(
+                node: TreeNode, 
+                taskInst: any,
+                iteration?: IterationSettings,
+             )=>async(dispatch:any)=> {
+
+    if (iteration) {
+        dispatch({
+            type: 'DISPATCH_BATCH_JOB_CONFIRMED',
+        })
+        dispatch(switchContent('jobStatus'))
+        const timer: Timer = {
+            on: true,
+            instance: null,
+            count: 0,
+            start: Date.now(),
+            iteration: iteration,
+        }
+        if (iteration.iteration_mode === 'Constant speed') {
+            let interval: number = 0
+            if (iteration.time_unit === 'second') {
+                interval = Math.round(1000 / iteration.arrival_rate)
+            } else if (iteration.time_unit === 'minute') {
+                interval = Math.round(1000 * 60 / iteration.arrival_rate)
+            }
+            timer.instance = setInterval(async ()=>{
+                if (timer.on) {
+                    if (timer.count < iteration.arrival_rate*iteration.duration) {
+                        timer.count++
+                        await dispatchTaskInst(node, taskInst, dispatch, 'DISPATCH_BATCH_JOB_TASK', timer)
+                    } else {
+                        timer.on = false
+                        if (timer.instance) {
+                            clearInterval(timer.instance)
+                        }
+                    }
+                } else if(timer.instance) {
+                    clearInterval(timer.instance)
+                }
+            }, interval)
+        } else if (iteration.iteration_mode === 'Possion process') {
+            const nextTime = (unitDuration: number, rate: number): number => {
+                return Math.round(-Math.log(1-Math.random()) / rate * unitDuration)
+            }
+            const duration = iteration.time_unit === 'second' ? 1000 : 60000
+            const roundRoutine = () => {
+                timer.instance = setTimeout(async()=> {
+                    if (timer.on) {
+                        if (timer.count < iteration.arrival_rate*iteration.duration) {
+                            timer.count++
+                            await dispatchTaskInst(node, taskInst, dispatch, 'DISPATCH_BATCH_JOB_TASK', timer)
+                            roundRoutine()
+                        } else {
+                            timer.on = false
+                            if (timer.instance) {
+                                clearTimeout(timer.instance)
+                            }
+                        }
+                    } else if(timer.instance) {
+                        clearTimeout(timer.instance)
+                    }
+                }, nextTime(duration, iteration.arrival_rate))
+            }
+            roundRoutine()
+        }
+
+    } else {
+        await dispatchTaskInst(node, taskInst, dispatch, 'DISPATCH_TASK')
     }
 }
 

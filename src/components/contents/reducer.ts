@@ -11,6 +11,7 @@ import ExampleReducer from './dispatcher/reducer'
 import TasksReducer from './tasks/reducer'
 import PodsReducer from './pods/reducer'
 import StatReducer from './stat/reducer'
+import JobsReducer from './jobs/reducer'
 
 import { defaultItem } from '../content.items'
 
@@ -26,6 +27,7 @@ const subReducers = combineReducers({
     tasks: TasksReducer,
     pods: PodsReducer,
     stat: StatReducer,
+    jobs: JobsReducer,
 })
 
 const initState : any = {

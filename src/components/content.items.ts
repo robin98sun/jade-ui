@@ -10,6 +10,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
+import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 
 export const contentItems: {
                              [key:string]:{
@@ -28,9 +29,9 @@ export const contentItems: {
             title: 'Dispatch Task',
             icon: SendOutlinedIcon,
         },
-        example: {
-          title: 'Example Task',
-          icon: AssignmentIcon,
+        jobStatus: {
+          title: 'Job Status',
+          icon: DoubleArrowIcon,
         },
         showTasks: {
           title: 'Show Tasks',
@@ -43,6 +44,12 @@ export const contentItems: {
         showPods: {
           title: 'Show Pods',
           icon: ViewComfyIcon,
+        },
+    },
+    {  
+        example: {
+          title: 'Sample Test',
+          icon: AssignmentIcon,
         },
     },
     {

@@ -81,7 +81,6 @@ class ContentTopo extends Component<Props, State>{
   componentDidUpdate() {
   }
 
-
   dismissErrorMsg() {
     if (this.props.hasShownErrorOfSearchFanout && this.props.searchResult && this.props.searchResult.errTime) {
       this.props.hasShownErrorOfSearchFanout(this.props.searchResult.errTime)

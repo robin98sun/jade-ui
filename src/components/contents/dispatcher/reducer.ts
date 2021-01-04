@@ -48,7 +48,7 @@ const dispatcherReducer = (state: any = initState, action: any) => {
         return Object.assign({}, state, {
             dispatchResult,
         })
-    case 'DISPATCH_TASK_CANCELED':
+    case 'DISPATCH_TASK_CANCELED': case 'DISPATCH_BATCH_JOB_CONFIRMED':
         dispatchResult = Object.assign({}, state.dispatchResult, {
             isUpdating: false,
             isFetching: false,

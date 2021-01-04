@@ -13,6 +13,7 @@ import ContentExample from './example'
 import ContentTasks from './tasks'
 import ContentPods from './pods'
 import ContentStat from './stat'
+import ContentJobs from './jobs'
 
 interface Props {
   contentName?: string
@@ -47,6 +48,8 @@ class Contents extends Component<Props>{
       return <ContentPods />
     case 'showStat':
       return <ContentStat />
+    case 'jobStatus': 
+      return <ContentJobs />
     default:
       return null
     }

@@ -161,7 +161,13 @@ class DrawerMenu extends Component<Props, State>{
                 </List>
                 {
                   i < listLength - 1 
-                  ? <Divider />
+                  ? <Divider 
+                      style={{
+                        marginTop: 10, 
+                        marginBottom: 10,
+                        backgroundColor: "#EEE",
+                      }}
+                    />
                   : null
                 }
               </div>

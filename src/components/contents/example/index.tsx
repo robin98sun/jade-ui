@@ -20,21 +20,37 @@ interface State {
   showDispatcher: boolean
 }
 
+const initOptions: any = {
+  cmd: 'service time',
+  queuing: 'ddl',
+  version: '1.0.0',
+  minServiceTime: 10000,
+  maxServiceTime: 30000,
+  workloadSize: 100,
+  aggregatorTime: 0,
+  aggregatorFactor: 0,
+  budgetMean: 0,
+  budgetVariance: 0,
+  budgetTarget: 0,
+}
+
+const optionsSchema : any = {
+  cmd: ['service time', 'gen and merge', 'gen and merge and wait'],
+  queuing: ['ddl', 'fifo'],
+  version: '1.0.0',
+  minServiceTime: 10000,
+  maxServiceTime: 30000,
+  workloadSize: 100,
+  aggregatorTime: 0,
+  aggregatorFactor: 0,
+  budgetMean: 0,
+  budgetVariance: 0,
+  budgetTarget: 0,
+}
+
 const initState: State = {
   task: null, 
-  options: {
-    cmd: 'service time',
-    version: '1.0.0',
-    minServiceTime: 10000,
-    maxServiceTime: 30000,
-    workloadSize: 100,
-    queuing: 'ddl',
-    aggregatorTime: 0,
-    aggregatorFactor: 0,
-    budgetMean: 0,
-    budgetVariance: 0,
-    budgetTarget: 0,
-  },
+  options: initOptions,
   showDispatcher: false,
 }
 
@@ -79,7 +95,8 @@ class ContentExample extends Component<Props, State>{
             <ObjectEditor
               inputMode
               subtitle="TEMPLATE OPTIONS"
-              object={initState.options}
+              object={this.templateOptions || initState.options}
+              schema={optionsSchema}
               onChange={(newObj:any)=>{
                 this.templateOptions = newObj
               }}
@@ -90,7 +107,7 @@ class ContentExample extends Component<Props, State>{
               fullWidth
               variant="contained"
               style={{
-                marginTop: 15,
+                marginTop: -3,
                 backgroundColor:"#33A033",
               }}
               onClick={()=>{
@@ -118,13 +135,13 @@ class ContentExample extends Component<Props, State>{
           </Grid>
         </Grid>
         </div>
-        <div hidden={!this.state.showDispatcher}>
+        <div hidden={!this.state.showDispatcher} style={{marginTop: 20}}>
         <DispatcherView 
           {...Object.assign({},this.props, this.state.task)}
           onClose={()=> {
-            this.setState({
-              showDispatcher: false,
-            })
+            // this.setState({
+            //   showDispatcher: false,
+            // })
           }}
         />
         </div>

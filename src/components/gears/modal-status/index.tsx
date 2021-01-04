@@ -21,6 +21,7 @@ interface Props {
   onClose?():any
   title?:string
   message?:string
+  contentView?: any
   progressIcon?:any
   onConfirm?():any
   confirmIcon?:any
@@ -93,7 +94,9 @@ class ModalStatus extends Component<Props>{
                     : null
                   }
                   {  
-                    this.props.message
+                    this.props.contentView
+                    ? this.props.contentView
+                    : this.props.message
                     ? <p id="transition-modal-description">{this.props.message}</p>
                     : null
                   }

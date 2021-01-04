@@ -1,9 +1,9 @@
 import { Task } from '../dispatcher/actions'
 import latestVersion from '../../../version.json'
 export interface TemplateOptions {
-    cmd: string, 
+    cmd: string|string[], 
     version: string,
-    queuing: string,
+    queuing: string|string[],
     minServiceTime: number,
     maxServiceTime: number,
     workloadSize: number,

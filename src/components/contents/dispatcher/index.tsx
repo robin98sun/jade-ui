@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { 
   Divider,
   Grid,
-  Button,
   Paper,
 } from '@material-ui/core'
 import SendOutlinedIcon from '@material-ui/icons/SendOutlined';
@@ -15,6 +14,7 @@ import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
 import DialogForm from '../../gears/dialog-form'
 import { TreeNode } from '../../gears/tree-view'
+import MenuButton from '../../gears/menu-button'
 
 import { CopyBlock, googlecode } from "react-code-blocks"
 
@@ -24,33 +24,40 @@ import {
   cancelDispatching,
   confirmDispatching,
   dismissDispatchingResult,
+  IterationSettings,
+  Task,
 } from './actions'
 
 import {
   connectNode,
 } from '../conn/actions'
 
+const iterationSettingsSchema = {
+  iteration_mode: [
+    'Constant speed', 
+    'Possion process',
+  ],
+  arrival_rate: 20,
+  duration: 10,
+  time_unit: [
+    'second',
+    'minute',
+  ]
+}
+
+const initIterationSettings:IterationSettings = {
+  iteration_mode: 'Possion process',
+  arrival_rate: 120,
+  duration: 30,
+  time_unit: 'minute',
+}
+
 export interface Props {
   style?: any
   node?: TreeNode
   cancelDispatching?():any,
-  confirmDispatching?(node: TreeNode, taskInst: any):any,
-  dispatchTask?(node: any, task: {
-        application: any, 
-        budget: any, 
-        options: any, 
-        aggregator: any, 
-        worker: any, 
-        fanout: {
-            collective: any,
-            exclusive: any
-        }, 
-        resources: {
-          aggregator: any, 
-          worker: any,
-        }
-      }
-    ):any
+  confirmDispatching?(node: TreeNode, taskInst: any, iteration?: typeof initIterationSettings):any,
+  dispatchTask?(node: any, task: Task):any
   dismissErrMsg?(errTime: number):any
   dismissDispatchingResult?(dataTime: number):any
   connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
@@ -68,6 +75,8 @@ export interface Props {
 
 interface State {
   modified: boolean
+  showIterationSettings: boolean
+  iteration?: IterationSettings
   application: any
   budget: any
   options: any
@@ -78,6 +87,8 @@ interface State {
   workerResources: any
 }
 const initState = {
+  modified: false,
+  showIterationSettings: false,
   application: {
     name: null,
     version: null,
@@ -119,7 +130,6 @@ const initState = {
     collective: [],
     exclusive: [],
   },
-  modified: false,
 }
 
 class ContentDispatcher extends Component<Props, State>{
@@ -301,23 +311,31 @@ class ContentDispatcher extends Component<Props, State>{
 
   render() {
     const introStyle = Object.assign({}, {}, this.props.style)
-
-    let openErrorModal = (this.props.dispatchResult && this.props.dispatchResult.error && this.props.dispatchResult.errTime !== this.props.dispatchResult.hasShownErrTime)||false
-
-    let errorModalText = this.props.dispatchResult ? this.props.dispatchResult.error:''
-
+    let iterationSettings = initIterationSettings
     return (
       <div className="content-intro" style={introStyle}>
         {
           this.props.node && this.props.node.name
           ? <div>
-              <Button 
+              <MenuButton
+                buttonTitle="Dispatch Task"
                 fullWidth
                 variant="contained"
-                onClick={this.onDispatch.bind(this)}
-              >
-                <SendOutlinedIcon style={{marginRight: 20}}/> Dispatch Task
-              </Button>
+                menuItems={["Dispatch Once", "Iteratively"]}
+                icon={<SendOutlinedIcon style={{marginRight: 10}}/>}
+                onSelected={(item:string)=>{
+                  if (item === 'Iteratively') {
+                    this.setState({
+                      showIterationSettings: true,
+                    })
+                  } else {
+                    this.setState({
+                      iteration: undefined,
+                    })
+                    this.onDispatch.call(this)
+                  }
+                }}
+              />
               <Grid container spacing={2} style={{marginTop: 10, marginBottom: 15}}>
                 <Grid item md={3} sm={6} xs={12} >
                   <ObjectEditor
@@ -391,13 +409,56 @@ class ContentDispatcher extends Component<Props, State>{
             </div>
           : null
         }
+        <ModalStatus
+          open={this.state.showIterationSettings}
+          title="Iteration settings"
+          contentView={
+            <ObjectEditor
+              style={{
+                width: 240,
+              }}
+              inputMode
+              schema={iterationSettingsSchema}
+              object={Object.assign({}, initIterationSettings)}
+              onChange={(newObj: any) => {
+                iterationSettings = newObj
+              }}
+            />
+          }
+          onClose={()=>{
+            this.setState({
+              showIterationSettings: false,
+            })
+          }}
+          onConfirm={()=>{
+            this.setState({
+              showIterationSettings: false,
+              iteration: iterationSettings,
+            })
+            this.onDispatch.call(this)
+          }}
+        />
         <DialogForm
           open={this.props.dispatchResult&&this.props.dispatchResult.isFetching}
-          title="Confirm to dispatch this task?"
+          title={
+            this.state.iteration
+            ? "Start the batch job?"
+            : "Dispatch the task?"
+          }
           contentView={
             <Paper>
               <CopyBlock
-                text={JSON.stringify(this.props.dispatchResult?this.props.dispatchResult.data:{}, null, 4)}
+                text={
+                  JSON.stringify(
+                    this.props.dispatchResult
+                    ? this.state.iteration
+                    ? {
+                        iteration: this.state.iteration, 
+                        task: this.props.dispatchResult.data,
+                      }
+                    : this.props.dispatchResult.data
+                    : {}
+                    , null, 4)}
                 language="json"
                 showLineNumbers
                 theme={googlecode}
@@ -415,15 +476,19 @@ class ContentDispatcher extends Component<Props, State>{
           }}
           onSubmit={()=>{
             if(this.props.confirmDispatching) {
-              this.props.confirmDispatching(this.props.node||{}, this.props.dispatchResult?this.props.dispatchResult.data:{})
+              this.props.confirmDispatching(
+                this.props.node||{}, 
+                this.props.dispatchResult?this.props.dispatchResult.data:{},
+                this.state.iteration,
+              )
             }
           }}
         />
 
         <ModalStatus 
-          open={openErrorModal||false}
+          open={(this.props.dispatchResult && this.props.dispatchResult.error && this.props.dispatchResult.errTime !== this.props.dispatchResult.hasShownErrTime)||false}
           title="ERROR"
-          message={errorModalText}
+          message={this.props.dispatchResult ? this.props.dispatchResult.error:''}
           onClose={this.dismissErrorMsg.bind(this)}
         />
         <ModalStatus 

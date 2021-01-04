@@ -12,6 +12,8 @@ import {
   IconButton,
   Theme,
   Grid,
+  Select,
+  MenuItem,
 } from '@material-ui/core'
 
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
@@ -62,6 +64,7 @@ interface Props extends WithStyles<typeof styles>{
   style?: any
   name?: string
   object?: EditableObject
+  schema?: EditableObject
   keyValuePairs?: {key: string, value: any}[]
   inputMode?: boolean
   editable?: boolean
@@ -114,7 +117,7 @@ class ObjectEditor extends Component<Props, State> {
     if (state.isEditing || props.inputMode) {
       return state
     }
-    return Object.assign({}, state, {
+    const newState: State = Object.assign({}, state, {
       isEditing: false,
       edition: Date.now(),
       isAddingProperty: false,
@@ -122,6 +125,12 @@ class ObjectEditor extends Component<Props, State> {
       keyValuePairs: props.keyValuePairs||[],
       modified: false,
     })
+    for (let key of Object.keys(newState.object)) {
+      if (Array.isArray(newState.object[key]) && newState.object[key].length) {
+        newState.object[key] = newState.object[key][0]
+      }
+    }
+    return newState
   }
 
   componentDidMount() {
@@ -135,6 +144,12 @@ class ObjectEditor extends Component<Props, State> {
 
   componentDidUpdate() {
     const obj = Object.assign({}, this.props.object, this.editingObject||this.keyMap ? this.assembleObject() : {}, this.props.object)
+
+    for (let key of Object.keys(obj)) {
+      if (Array.isArray(obj[key]) && obj[key].length) {
+        obj[key] = obj[key][0]
+      }
+    }
     const kvp = this.keyValuePairs || this.props.keyValuePairs || []
     if (JSON.stringify(obj) !== JSON.stringify(this.state.object)
       || JSON.stringify(kvp) !== JSON.stringify(this.state.keyValuePairs)) {
@@ -349,6 +364,34 @@ class ObjectEditor extends Component<Props, State> {
       }
     }
 
+    const updateObject = (
+            newValue: any, 
+            propName: string,
+            propIdx: number,
+            isKey: boolean,
+            onChange:any,
+          ) => {
+
+      if (this.props.arrayOfkeyValuePairs) {
+        if (this.keyValuePairs && propIdx < this.keyValuePairs.length) {
+          if (isKey) {
+            this.keyValuePairs[propIdx].key = newValue
+          } else {
+            this.keyValuePairs[propIdx].value = newValue
+          }
+        }
+        onChange.call(this, this.keyValuePairs, propName, newValue)
+      } else {
+        const tempObj:EditableObject = {}
+        tempObj[propName] = newValue
+        
+        const sourceObj: any = isKey ? this.keyMap : this.editingObject
+        const newObj = Object.assign({},sourceObj, tempObj)
+        isKey ? this.keyMap = newObj : this.editingObject = newObj
+        onChange.call(this, newObj, propName, newValue)
+      }
+    }
+
     const AlwaysFocusDuringInput = (props: {
                                               i: number, 
                                               propName: string,
@@ -378,24 +421,7 @@ class ObjectEditor extends Component<Props, State> {
             }
           }
         }
-        if (this.props.arrayOfkeyValuePairs) {
-          if (this.keyValuePairs && props.i < this.keyValuePairs.length) {
-            if (props.forKey) {
-              this.keyValuePairs[props.i].key = v
-            } else {
-              this.keyValuePairs[props.i].value = v
-            }
-          }
-          props.onChange.call(this, this.keyValuePairs, e.target.name, v)
-        } else {
-          const tempObj:EditableObject = {}
-          tempObj[e.target.name] = v
-          
-          const sourceObj: any = props.forKey ? this.keyMap : this.editingObject
-          const newObj = Object.assign({},sourceObj, tempObj)
-          props.forKey ? this.keyMap = newObj : this.editingObject = newObj
-          props.onChange.call(this, newObj, e.target.name, v)
-        }
+        updateObject(v, e.target.name, props.i, props.forKey||false, props.onChange)
         setInputValue(v===null?undefined:v)
       }
       return (
@@ -434,55 +460,58 @@ class ObjectEditor extends Component<Props, State> {
       <div style={thisStyle}>
         <Card>
           {
-            <CardHeader
-              titleTypographyProps={{
-                variant:'h6', 
-              }}
-              style={{
-                backgroundColor: this.state.isEditing && !this.props.inputMode
-                    ? this.props.theme.palette.primary.main
-                    : this.props.theme.palette.grey[200],
-                color: this.state.isEditing && !this.props.inputMode
-                    ? this.props.theme.palette.grey[50]
-                    : this.props.theme.palette.text.primary,
-              }}
-              title={this.props.title||''}
-              subheader={this.props.subtitle}
-              action={
-                this.state.isEditing && !this.props.inputMode
-                ? <div>
-                    {
-                      this.props.deletable
-                      ? <IconButton
-                          onClick={this.onDelete.bind(this)}
-                        >
-                          <DeleteForeverOutlinedIcon color="error" />
-                        </IconButton>
-                      : null
-                    }
-                    <IconButton
-                      onClick={this.onSubmit.bind(this)}
-                    >
-                      <BackupOutlinedIcon color="error"/>
-                    </IconButton>
+            this.props.title || this.props.subtitle
+            ? <CardHeader
+                titleTypographyProps={{
+                  variant:'h6', 
+                }}
+                style={{
+                  backgroundColor: this.state.isEditing && !this.props.inputMode
+                      ? this.props.theme.palette.primary.main
+                      : this.props.theme.palette.grey[200],
+                  color: this.state.isEditing && !this.props.inputMode
+                      ? this.props.theme.palette.grey[50]
+                      : this.props.theme.palette.text.primary,
+                }}
+                title={this.props.title||''}
+                subheader={this.props.subtitle}
+                action={
+                  this.state.isEditing && !this.props.inputMode
+                  ? <div>
+                      {
+                        this.props.deletable
+                        ? <IconButton
+                            onClick={this.onDelete.bind(this)}
+                          >
+                            <DeleteForeverOutlinedIcon color="error" />
+                          </IconButton>
+                        : null
+                      }
+                      <IconButton
+                        onClick={this.onSubmit.bind(this)}
+                      >
+                        <BackupOutlinedIcon color="error"/>
+                      </IconButton>
 
-                    <IconButton
-                      onClick={this.onCancelEditing.bind(this)}
-                    >
-                      <ClearOutlinedIcon color="secondary"/>
-                    </IconButton>
-                  </div> 
-                : this.props.editable && !this.props.inputMode
-                ? <div>
-                    <IconButton
-                      onClick={this.onStartEditing.bind(this)}
-                    >
-                      <EditOutlinedIcon />
-                    </IconButton>
-                  </div>
-                : null
-              }
-            />
+                      <IconButton
+                        onClick={this.onCancelEditing.bind(this)}
+                      >
+                        <ClearOutlinedIcon color="secondary"/>
+                      </IconButton>
+                    </div> 
+                  : this.props.editable && !this.props.inputMode
+                  ? <div>
+                      <IconButton
+                        onClick={this.onStartEditing.bind(this)}
+                      >
+                        <EditOutlinedIcon />
+                      </IconButton>
+                    </div>
+                  : null
+                }
+              />
+            : null
+            
           }
           
           <Divider />
@@ -546,6 +575,101 @@ class ObjectEditor extends Component<Props, State> {
                       : null
                     }
                   </Grid>
+                )
+              } else if (
+                (this.state.isEditing || this.props.inputMode)
+                && this.props.schema
+                && Array.isArray(this.props.schema[propName]) 
+                && this.props.schema[propName].length > 0
+                && this.props.schema[propName].reduce((a:any,b:any, idx:number) => {
+                    if (idx === 1) {
+                      return typeof a === 'string' && typeof b === 'string'
+                    } else {
+                      return a && typeof b === 'string'
+                    }
+                   })
+                ) {
+                const Selector = function (props: {
+                                             propIdx: number,
+                                             propName: string,
+                                             values: string[]
+                                             onChange:any
+                                             selectedIdx: number,
+                                           }) {
+
+                  const [inputValue, setInputValue] = React.useState(props.selectedIdx)
+                  return (
+                    <Select
+                      value={inputValue}
+                      onChange={(e)=>{
+                        e.preventDefault()
+                        setInputValue(e.target.value)
+
+                        updateObject(
+                          props.values[Number(e.target.value)], 
+                          props.propName, 
+                          props.propIdx,
+                          false, 
+                          props.onChange,
+                         )
+                      }}
+                    >
+                      {
+                        props.values.map((item,k)=>{
+                          return (
+                            <MenuItem 
+                              value={k} 
+                              key={rjKey+':selector:'+k}
+                            >
+                              {item}
+                            </MenuItem>
+                          )
+                        })
+                      }
+                    </Select>
+                  )
+                }
+                return (
+                  <div 
+                    style={{
+                      marginTop: (i===0?spaceUnit:2*spaceUnit)*(this.props.spacing||1)
+                    }}
+                    key={rjKey}
+                  >
+                    <TextField
+                      multiline
+                      label={propName}
+                      variant="outlined"
+                      fullWidth
+                      InputLabelProps={{
+                        shrink: true,
+                        className: (this.state.isEditing)
+                              ? this.props.classes.inputLabelEditing
+                              : this.props.classes.inputLabelNotEditing
+                      }}
+
+                      InputProps={{
+                        classes: {
+                          notchedOutline: this.props.classes.notchedOutlineEditing
+                        },
+                        className: this.props.classes.item,
+                      }}
+                      value=""
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      marginLeft: 15,
+                      marginTop: -45,
+                    }}>
+                    <Selector 
+                      propName={propName}
+                      propIdx={i}
+                      values={this.props.schema[propName]}
+                      onChange={this.onPropValueChange}
+                      selectedIdx={this.props.schema[propName].indexOf(value)}
+                    />
+                    </div>
+                  </div>
                 )
               } else {
                 return (
