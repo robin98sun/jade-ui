@@ -29,21 +29,23 @@ export const contentItems: {
             title: 'Dispatch Task',
             icon: SendOutlinedIcon,
         },
-        jobStatus: {
-          title: 'Job Status',
-          icon: DoubleArrowIcon,
-        },
         showTasks: {
           title: 'Show Tasks',
           icon: FormatListNumberedIcon,
         },
-        showStat: {
-          title: 'Show Stat',
-          icon: EqualizerIcon,
-        },
         showPods: {
           title: 'Show Pods',
           icon: ViewComfyIcon,
+        },
+    },
+    {
+        jobStatus: {
+          title: 'Job Status',
+          icon: DoubleArrowIcon,
+        },
+        showStat: {
+          title: 'Show Stat',
+          icon: EqualizerIcon,
         },
     },
     {  
