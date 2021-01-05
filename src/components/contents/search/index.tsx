@@ -44,13 +44,13 @@ interface State {
 }
 class ContentTopo extends Component<Props, State>{
 
-  private collectiveCriteria: {name: string, value: any}[]
-  private exclusiveCriteria: {name: string, value: any}[]
+  private collectiveCriteria: {name: string, value: any}[]|null
+  private exclusiveCriteria: {name: string, value: any}[]|null
 
   constructor(props: Props) {
     super(props)
-    this.collectiveCriteria=[]
-    this.exclusiveCriteria=[]
+    this.collectiveCriteria=null
+    this.exclusiveCriteria=null
     this.state={
       collectiveCriteria: [],
       exclusiveCriteria: [],
@@ -68,12 +68,13 @@ class ContentTopo extends Component<Props, State>{
   }
 
   componentDidMount() {
-    if (this.collectiveCriteria.length || this.exclusiveCriteria.length) {
-      this.collectiveCriteria = []
-      this.exclusiveCriteria = []
+    if (this.collectiveCriteria || this.exclusiveCriteria) {
+      this.collectiveCriteria = null
+      this.exclusiveCriteria = null
       this.setState({
-        collectiveCriteria: [],
-        exclusiveCriteria: [],
+        collectiveCriteria: this.props.collectiveCriteria||[],
+        exclusiveCriteria: this.props.exclusiveCriteria||[],
+        modified: false,
       })
     }
   }
@@ -100,18 +101,20 @@ class ContentTopo extends Component<Props, State>{
       this.exclusiveCriteria = criteria
     }
     if (this.props.onCriteriaChange) {
-      this.props.onCriteriaChange(this.collectiveCriteria, this.exclusiveCriteria)
+      this.props.onCriteriaChange(this.collectiveCriteria||this.state.collectiveCriteria, this.exclusiveCriteria||this.state.exclusiveCriteria)
     }
   }
 
   onSearch() {
     if (this.props.searchFanout) {
-      this.setState({
-        collectiveCriteria: this.collectiveCriteria,
-        exclusiveCriteria: this.exclusiveCriteria,
-        modified: true,
-      })
-      this.props.searchFanout(this.props.node, this.collectiveCriteria, this.exclusiveCriteria)
+      const newState = {
+        collectiveCriteria: this.collectiveCriteria||this.state.collectiveCriteria||[],
+        exclusiveCriteria: this.exclusiveCriteria || this.state.exclusiveCriteria||[],
+        modified: (this.collectiveCriteria!==null||this.exclusiveCriteria!==null||false),
+      }
+      console.log('searching:', newState)
+      this.setState(newState)
+      this.props.searchFanout(this.props.node, newState.collectiveCriteria, newState.exclusiveCriteria)
     }
   }
 
