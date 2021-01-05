@@ -16,13 +16,13 @@ import ObjectEditor from '../../gears/object-editor'
 
 import TopoPage from '../topo'
 
-
 import { 
   hasShownErrorOfSearchFanout, 
   closeSearchResult,
   searchFanout,
 } from './actions'
 import { Message } from './reducer'
+
 
 interface Props {
   style?: any
@@ -143,15 +143,15 @@ class ContentTopo extends Component<Props, State>{
             <Grid container spacing={2}>
             {
               !this.props.isShowingSearchResult 
-              ? <Grid item xs={12} >
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={this.onSearch.bind(this)}
-                  >
-                    <PageviewOutlinedIcon style={{marginRight:20}}/> Fanout
-                  </Button>
-                </Grid> 
+              ?   <Grid item xs={12}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={this.onSearch.bind(this)}
+                    >
+                      <PageviewOutlinedIcon style={{marginRight:20}}/> Fanout
+                    </Button>
+                  </Grid> 
               : null
             }
 

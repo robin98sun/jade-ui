@@ -86,9 +86,9 @@ class ContentTasks extends Component<Props>{
           && this.props.tasks.clearTime !== this.props.tasks.hasShownClearTime)||false}
         title="Result of clearing"
         message={
-          (this.props.tasks 
-          ? this.props.tasks.clearResponse
-          : null) || 'unknown response'
+          this.props.tasks 
+          ? JSON.stringify(this.props.tasks.clearResponse, null, 4)
+          : 'unknown response'
         }
         onClose={()=>{
           if (this.props.tasks && this.props.hasShownClearCacheResult) {
@@ -130,7 +130,7 @@ class ContentTasks extends Component<Props>{
             Refresh
           </Button>
         </Grid>
-        <Grid item sm={2} xs={12}>
+        <Grid item sm={1} xs={12}>
           <div style={{height: 10}}/>
         </Grid>
         <Grid item sm={5} xs={12}>
@@ -158,7 +158,7 @@ class ContentTasks extends Component<Props>{
 
       {
         this.props.tasks && this.props.tasks.data
-        ? <Fade in={(this.props.tasks && this.props.tasks.data)||false} timeout={1500}>
+        ? <Fade in={this.props.tasks !== undefined && this.props.tasks.data !== undefined} timeout={1500}>
           <Grid container>
             <Grid item xs={12}>
             <Paper>
