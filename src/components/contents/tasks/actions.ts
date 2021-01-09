@@ -61,7 +61,7 @@ export const fetchTaskCache = (node: TreeNode) => async(dispatch: any) => {
 
     try {
         const baseUrl = node && node.name ? node.name : ''
-        const url = `${baseUrl}/$jade$/debug/taskCache`
+        const url = `${baseUrl}/$jade$/debug/collectTraces`
         const res = await fetch(url, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'},
