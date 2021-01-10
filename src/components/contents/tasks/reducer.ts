@@ -127,7 +127,7 @@ const reducer = (state: any = initState, action: any) => {
         const taskData: any = action.data
         let onscreenData: any = null
         if (Array.isArray(taskData) && taskData.length && Array.isArray(taskData[0])) {
-            onscreenData = taskData.map(line => (line.join(" "))).join("\n")
+            onscreenData = taskData.map(line => (line.join(" ")))
         } else {
             onscreenData = taskData
         }
