@@ -16,38 +16,40 @@ export interface TemplateOptions {
     budgetVariance: number,
     budgetTarget: number,
 }
-export const plankton = (options: TemplateOptions) => {
-    const taskSimple: Task = {
+export const plankton = (to: TemplatetOptions):Task => {
+    const taskSimple: Task = { 
+        options: {
+            updateNetwork: false,
+            queuing: to.queuing,
+            estimatedServiceTimeModel: to.serviceTimeDistribution,
+            estimatedMeanServiceTime: to.serviceTime,
+        },
         application: {
             name: 'jade-example',
-            version: options.version,
+            version: to.version,
             owner: 'aces.uta.edu',
         }, 
         budget: {
-            mean: options.budgetMean,
-            variance: options.budgetVariance,
-            target: options.budgetTarget,
+            mean: to.budgetMean,
+            variance: to.budgetVariance,
+            target: to.budgetTarget,
             fanoutTable:[0,100, 300, 600, 1200, 1800, 2400, 3600]
         }, 
-        options: {
-            updateNetwork: false,
-            queuing: options.queuing,
-        }, 
         aggregator: {
-            image: `${options.registry}/plankton:${latestVersion.version}-amd64`,
+            image: `${to.registry}/plankton:${latestVersion.version}-amd64`,
             port: 8080,
             input: {},
         }, 
         worker: {
-            image: `${options.registry}/plankton:${latestVersion.version}-${options.registry === 'robin98'?'arm32':'amd64'}`,
+            image: `${to.registry}/plankton:${latestVersion.version}-${to.registry === 'robin98'?'arm32':'amd64'}`,
             port: 8080,
             input: {
-                "cmd": options.cmd,
-                "size": options.workloadSize,
-                "maxEatTime": options.maxServiceTime,
-                "minEatTime": options.minServiceTime,
-                "digestTime": options.aggregatorTime,
-                "digestFactor": options.aggregatorFactor,
+                "cmd": to.cmd,
+                "size": to.workloadSize,
+                "maxEatTime": to.maxServiceTime,
+                "minEatTime": to.minServiceTime,
+                "digestTime": to.aggregatorTime,
+                "digestFactor": to.aggregatorFactor,
             }
         },
         fanout: {
@@ -88,6 +90,5 @@ export const plankton = (options: TemplateOptions) => {
     }
 
     let task: Task = Object.assign({}, taskSimple)
-
     return task
 }

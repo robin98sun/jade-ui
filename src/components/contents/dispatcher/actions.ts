@@ -102,6 +102,12 @@ export const dispatchTask = (
             }
         }
     }
+    if (task.options && task.options.estimatedServiceTimeModel) {
+        taskInst.payload[0].options = {
+            estimatedServiceTimeModel: task.options.serviceTimeDistribution,
+            estimatedMeanServiceTime: task.options.serviceTime,
+        }
+    }
     dispatch({
         type: 'DISPATCH_TASK_TO_CONFIRM',
         data: taskInst,
