@@ -2,8 +2,8 @@ import { Task } from '../dispatcher/actions'
 import latestVersion from '../../../version.json'
 export interface TemplateOptions {
     registry: string,
-    serviceTime: number,
     serviceTimeDistribution: string|string[],
+    meanServiceTime: number,
     cmd: string|string[], 
     version: string,
     queuing: string|string[],
@@ -88,9 +88,9 @@ export const plankton = (to: TemplateOptions):Task => {
     }
 
     if (to.serviceTimeDistribution && to.serviceTimeDistribution !== 'none') {
-        Object.assign(taskSimple.options, {
+        taskSimple.options = Object.assign(taskSimple.options, {
             estimatedServiceTimeModel: to.serviceTimeDistribution,
-            estimatedMeanServiceTime: to.serviceTime,
+            estimatedMeanServiceTime: to.meanServiceTime,
         })
     }
     let task: Task = Object.assign({}, taskSimple)

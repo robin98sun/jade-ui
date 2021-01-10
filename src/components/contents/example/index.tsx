@@ -22,8 +22,8 @@ interface State {
 
 const initOptions: any = {
   registry: '192.168.57.11',
-  serviceTime: 1000,
   serviceTimeDistribution: 'exponential',
+  meanServiceTime: 1000,
   queuing: 'fifo',
   version: '1.0.0',
   cmd: 'none',
@@ -39,8 +39,8 @@ const initOptions: any = {
 
 const optionsSchema : any = {
   registry: 'robin98',
-  serviceTime: 1000,
   serviceTimeDistribution: ['none', 'exponential'],
+  meanServiceTime: 1000,
   queuing: ['ddl', 'fifo'],
   cmd: ['none', 'service time', 'gen and merge', 'gen and merge and wait'],
   version: '1.0.0',

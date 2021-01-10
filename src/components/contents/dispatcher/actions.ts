@@ -53,37 +53,37 @@ export const dispatchTask = (
         token: node!.attributes!.token,
         payload: [{
             task: {
-                forceUpdateNetworkStructure: task!.options?task!.options!.updateNetwork||false:false,
-                queuingMechanism: task!.options?task!.options!.queuing||'fifo':'fifo',
+                forceUpdateNetworkStructure: task.options?task!.options!.updateNetwork||false:false,
+                queuingMechanism: task.options?task.options!.queuing||'fifo':'fifo',
                 application: {
                     envName: "jadelet",
-                    name: task!.application!.name,
-                    version: task!.application!.version,
-                    owner: task!.application!.owner,
+                    name: task.application.name,
+                    version: task.application!.version,
+                    owner: task.application!.owner,
                     modules: {
                         aggregator: Object.assign({
                             port: 8080,
                             protocol: 'TCP',
                             input: {}, 
-                        }, task!.aggregator),
+                        }, task.aggregator),
                         worker: Object.assign({
                             port: 8080,
                             protocol: 'TCP',
                             input: {},
-                        },task!.worker),
+                        },task.worker),
                     }
                 },
                 requirements: {
-                    collective: task!.fanout!.collective,
-                    exclusive: task!.fanout!.exclusive,
+                    collective: task.fanout!.collective,
+                    exclusive: task.fanout!.exclusive,
                     allocations: {
                         worker: {
-                            minimumCapacity: Object.assign({}, task!.resources!.worker),
-                            maximumCapacity: Object.assign({}, task!.resources!.worker),
+                            minimumCapacity: Object.assign({}, task.resources!.worker),
+                            maximumCapacity: Object.assign({}, task.resources!.worker),
                         },
                         aggregator: {
-                            minimumCapacity: Object.assign({},task!.resources!.aggregator),
-                            maximumCapacity: Object.assign({},task!.resources!.aggregator),
+                            minimumCapacity: Object.assign({},task.resources!.aggregator),
+                            maximumCapacity: Object.assign({},task.resources!.aggregator),
                         },
                     }
                 }
@@ -105,10 +105,11 @@ export const dispatchTask = (
     }
     if (task.options && task.options.estimatedServiceTimeModel) {
         taskInst.payload[0].options = {
-            estimatedServiceTimeModel: task.options.serviceTimeDistribution,
-            estimatedMeanServiceTime: task.options.serviceTime,
+            estimatedServiceTimeModel: task.options.estimatedServiceTimeModel,
+            estimatedMeanServiceTime: task.options.estimatedMeanServiceTime,
         }
     }
+    console.log('task options:', task.options, taskInst.payload[0].options)
     dispatch({
         type: 'DISPATCH_TASK_TO_CONFIRM',
         data: taskInst,
