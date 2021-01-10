@@ -23,7 +23,7 @@ const searchReducer = (state: any = initState, action: any) => {
     case 'CONNECT_NODE':
         thisState = Object.assign({}, state, {
             node: {
-                name: `${action.data.protocol}://${action.data.addr}:${action.data.port}`,
+                name: `${action.data.protocol}://${action.data.addr||action.data.hostname}:${action.data.port}`,
                 attributes: action.data,
             }
         })
