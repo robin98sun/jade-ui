@@ -1,6 +1,9 @@
 import { Task } from '../dispatcher/actions'
 import latestVersion from '../../../version.json'
 export interface TemplateOptions {
+    registry: string,
+    serviceTime: number,
+    serviceTimeDistribution: string|string[],
     cmd: string|string[], 
     version: string,
     queuing: string|string[],
@@ -31,12 +34,12 @@ export const plankton = (options: TemplateOptions) => {
             queuing: options.queuing,
         }, 
         aggregator: {
-            image: `robin98/plankton:${latestVersion.version}-amd64`,
+            image: `${options.registry}/plankton:${latestVersion.version}-amd64`,
             port: 8080,
             input: {},
         }, 
         worker: {
-            image: `robin98/plankton:${latestVersion.version}-arm32`,
+            image: `${options.registry}/plankton:${latestVersion.version}-${options.registry === 'robin98'?'arm32':'amd64'}`,
             port: 8080,
             input: {
                 "cmd": options.cmd,

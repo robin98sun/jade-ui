@@ -414,7 +414,11 @@ class ObjectEditor extends Component<Props, State> {
             try {
               let n = Number(v)
               if (!Number.isNaN(n)) {
-                v = n
+                if (v.length>0 && v[v.length-1]==='.') {
+                  // v = v
+                } else {
+                  v = n
+                }
               }
             } catch (e) {
 

@@ -21,11 +21,14 @@ interface State {
 }
 
 const initOptions: any = {
-  cmd: 'service time',
-  queuing: 'ddl',
+  registry: 'robin98',
+  serviceTime: 1000,
+  serviceTimeDistribution: 'exponential',
+  queuing: 'fifo',
   version: '1.0.0',
+  cmd: 'none',
   minServiceTime: 10000,
-  maxServiceTime: 30000,
+  maxServiceTime: 10000,
   workloadSize: 100,
   aggregatorTime: 0,
   aggregatorFactor: 0,
@@ -35,11 +38,14 @@ const initOptions: any = {
 }
 
 const optionsSchema : any = {
-  cmd: ['service time', 'gen and merge', 'gen and merge and wait'],
+  registry: 'robin98',
+  serviceTime: 1000,
+  serviceTimeDistribution: ['none', 'exponential'],
   queuing: ['ddl', 'fifo'],
+  cmd: ['none', 'service time', 'gen and merge', 'gen and merge and wait'],
   version: '1.0.0',
   minServiceTime: 10000,
-  maxServiceTime: 30000,
+  maxServiceTime: 10000,
   workloadSize: 100,
   aggregatorTime: 0,
   aggregatorFactor: 0,
