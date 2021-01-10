@@ -54,7 +54,7 @@ export const dispatchTask = (
         payload: [{
             task: {
                 forceUpdateNetworkStructure: task!.options?task!.options!.updateNetwork||false:false,
-                queuingMechanism: task!.options?task!.options!.queuing||'ddl':'ddl',
+                queuingMechanism: task!.options?task!.options!.queuing||'fifo':'fifo',
                 application: {
                     envName: "jadelet",
                     name: task!.application!.name,
@@ -91,7 +91,8 @@ export const dispatchTask = (
             reportTo: {},
             budgets: {
                 worker: budget,
-            }
+            },
+            options: {},
         }]
     }
     for (let type of ['worker', 'aggregator']) {
