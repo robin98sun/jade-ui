@@ -76,8 +76,8 @@ export const fetchTaskCache = (node: TreeNode) => async(dispatch: any) => {
 
         if (!msg) {
             throw Error('invalid response')
-        } else if (typeof msg !== 'object' || msg.Error) {
-            throw Error(msg.Error || msg || 'fetch task cache failed')
+        } else if (typeof msg === 'object' && msg.Error) {
+            throw Error(msg.Error)
         }
         dispatch({
             type: 'FETCH_TASK_CACHE_SUCCEEDED',
