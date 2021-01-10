@@ -16,13 +16,11 @@ export interface TemplateOptions {
     budgetVariance: number,
     budgetTarget: number,
 }
-export const plankton = (to: TemplatetOptions):Task => {
+export const plankton = (to: TemplateOptions):Task => {
     const taskSimple: Task = { 
         options: {
             updateNetwork: false,
             queuing: to.queuing,
-            estimatedServiceTimeModel: to.serviceTimeDistribution,
-            estimatedMeanServiceTime: to.serviceTime,
         },
         application: {
             name: 'jade-example',
@@ -43,14 +41,14 @@ export const plankton = (to: TemplatetOptions):Task => {
         worker: {
             image: `${to.registry}/plankton:${latestVersion.version}-${to.registry === 'robin98'?'arm32':'amd64'}`,
             port: 8080,
-            input: {
+            input: to.cmd && to.cmd !== 'none' ? {
                 "cmd": to.cmd,
                 "size": to.workloadSize,
                 "maxEatTime": to.maxServiceTime,
                 "minEatTime": to.minServiceTime,
                 "digestTime": to.aggregatorTime,
                 "digestFactor": to.aggregatorFactor,
-            }
+            }: {}
         },
         fanout: {
             collective: [
@@ -89,6 +87,12 @@ export const plankton = (to: TemplatetOptions):Task => {
         }
     }
 
+    if (to.serviceTimeDistribution && to.serviceTimeDistribution !== 'none') {
+        Object.assign(taskSimple.options, {
+            estimatedServiceTimeModel: to.serviceTimeDistribution,
+            estimatedMeanServiceTime: to.serviceTime,
+        })
+    }
     let task: Task = Object.assign({}, taskSimple)
     return task
 }
