@@ -77,11 +77,11 @@ export const plankton = (to: TemplateOptions):Task => {
         }, 
         resources: {
             aggregator: {
-                "cpu": 2000,
+                "cpu": 200,
                 "ram": 300,
             }, 
             worker: {
-                "cpu": 500,
+                "cpu": 200,
                 "ram": 100,
             },
         }
