@@ -21,7 +21,7 @@ interface State {
 }
 
 const initOptions: any = {
-  registry: '192.168.57.8',
+  registry: 'robin98',
   serviceTimeDistribution: 'exponential',
   meanServiceTime: 1000,
   queuing: 'fifo',
