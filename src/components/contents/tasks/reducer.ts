@@ -124,11 +124,19 @@ const reducer = (state: any = initState, action: any) => {
             tasks,
         })
     case 'FETCH_TASK_CACHE_SUCCEEDED':
+        const taskData: any = action.data
+        let onscreenData: any = null
+        if (Array.isArray(taskData) && taskData.length && Array.isArray(taskData[0])) {
+            onscreenData = taskData.map(line => (line.join(" "))).join("\n")
+        } else {
+            onscreenData = taskData
+        }
+
         tasks = Object.assign({}, state.tasks, {
             isFetching: false,
             isClearing: false,
             isConfirming: false,
-            data: action.data,
+            data: onscreenData,
             clearResponse: null,
             error: null,
             dataTime: Date.now(),

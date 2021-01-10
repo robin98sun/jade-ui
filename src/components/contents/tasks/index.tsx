@@ -175,6 +175,7 @@ class ContentTasks extends Component<Props>{
           </Fade>
         : null
       }
+      
       </div>
     );
   }
