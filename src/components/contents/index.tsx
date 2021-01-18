@@ -42,7 +42,7 @@ class Contents extends Component<Props>{
       return <ContentSearch />
     case 'example':
       return <ContentExample />
-    case 'showTasks': 
+    case 'showTraces': 
       return <ContentTraces />
     case 'showPods': 
       return <ContentPods />

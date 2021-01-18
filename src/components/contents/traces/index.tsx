@@ -26,6 +26,7 @@ import {
   hasShownClearCacheResult,
   clearTaskCacheConfirmed,
   fetchTraces,
+  fetchJobs,
 } from './actions'
 
 interface Props {
@@ -34,6 +35,7 @@ interface Props {
   node?: TreeNode
   traces?: Message
   jobs?: string[]
+  fetchJobs?(node: TreeNode): any
   fetchTraces?(node: TreeNode, jobId?: string): any
   clearTaskCacheConfirmed?(node: TreeNode): any
   hasShownClearCacheOrFetchCacheError?(errTime: number): any
@@ -54,15 +56,17 @@ class ContentTraces extends Component<Props, State>{
     }
   }
   componentDidMount() {
-    console.log('this.props.node:', this.props.node)
-    // if (this.props.fetchTraces) {
-      // this.props.fetchTraces(this.props.node||{})
-    // }
+    if (this.props.fetchJobs) {
+      this.props.fetchJobs(this.props.node||{})
+    }
   }
   render() {
     const introStyle = Object.assign({}, {}, this.props.style)
-    const jobSelectorSchema = {
-      job: Array.prototype.push.call([], 'all', ...(this.props.jobs||[])),
+    const jobSelectorSchema:any = {
+      job: ['all'],
+    }
+    if (this.props.jobs && this.props.jobs.length) {
+      Array.prototype.push.apply(jobSelectorSchema.job, this.props.jobs)
     }
 
     return (
@@ -127,12 +131,12 @@ class ContentTraces extends Component<Props, State>{
         }}
       />
       <Grid container>
-        <Grid item xs >
+        <Grid item sm={11} xs={12} >
           <ObjectEditor
+            style={{marginBottom: 15}}
             schema={jobSelectorSchema}
             object={{job: this.state.selectedJob}}
             inputMode
-            subtitle="jobs to fetch"
             onChange={(newObj:any)=>{
               this.setState({
                 selectedJob: newObj.job,
@@ -148,7 +152,7 @@ class ContentTraces extends Component<Props, State>{
             }}
             onClick={()=> {
               if (this.props.fetchTraces) {
-                this.props.fetchTraces(this.props.node||{}, this.state.selectedJob === 'all'?undefined:this.state.selectedJob)
+                this.props.fetchTraces(this.props.node||{}, this.state.selectedJob)
               }
             }}
           >
@@ -218,5 +222,6 @@ export default connect(
     hasShownClearCacheResult,
     clearTaskCacheConfirmed,
     fetchTraces,
+    fetchJobs,
   },
 )(ContentTraces);

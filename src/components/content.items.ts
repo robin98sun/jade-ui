@@ -24,34 +24,32 @@ export const contentItems: {
             icon: SettingsIcon,
         },
     },
-    {
-        dispatcher: {
-            title: 'Dispatch Task',
-            icon: SendOutlinedIcon,
+    { 
+        example: {
+          title: 'Batch Test',
+          icon: AssignmentIcon,
         },
-        showTasks: {
-          title: 'Show Tasks',
+        jobStatus: {
+          title: 'Test Status',
+          icon: DoubleArrowIcon,
+        },
+        showTraces: {
+          title: 'Show Traces',
           icon: FormatListNumberedIcon,
+        },
+        showStat: {
+          title: 'Show Stat',
+          icon: EqualizerIcon,
         },
         showPods: {
           title: 'Show Pods',
           icon: ViewComfyIcon,
         },
     },
-    {
-        jobStatus: {
-          title: 'Job Status',
-          icon: DoubleArrowIcon,
-        },
-        showStat: {
-          title: 'Show Stat',
-          icon: EqualizerIcon,
-        },
-    },
     {  
-        example: {
-          title: 'Sample Test',
-          icon: AssignmentIcon,
+        dispatcher: {
+          title: 'Dispatch Task',
+          icon: SendOutlinedIcon,
         },
     },
     {
