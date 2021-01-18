@@ -55,6 +55,8 @@ class ContentJobs extends Component<Props, State>{
             const remainingSeconds = (durationSeconds > passedSeconds && !job.isCanceled && !job.isFinished) 
                                     ? Math.round(durationSeconds - passedSeconds) 
                                     : 0
+            const runningSeconds = job.timer.end > 0 ? (job.timer.end - job.timer.start)/1000:passedSeconds
+            const realArrivalRate = Math.round((job.count.total-job.count.remaining)/runningSeconds*600)/10
             return (
 
               <Grid item xs={12} key={idx}>
@@ -64,12 +66,30 @@ class ContentJobs extends Component<Props, State>{
                 : null
               }
               <Grid container alignItems='center' spacing={2}>
-                <Grid item md={3} xs={6} style={{marginBottom: -10}}>
+                <Grid item md={6} xs={12} style={{marginBottom: -10}}>
                   <Typography
                     variant="subtitle2"
                   >
                   {
                     `Job ID: ${job.id}`
+                  }
+                  </Typography>
+                </Grid>
+                <Grid item md={3} xs={6} style={{marginBottom: -10}}>
+                  <Typography
+                    variant="subtitle2"
+                  >
+                  {
+                    `running time: ${runningSeconds} sec`
+                  }
+                  </Typography>
+                </Grid>
+                <Grid item md={3} xs={6} style={{marginBottom: -10}}>
+                  <Typography
+                    variant="subtitle2"
+                  >
+                  {
+                    `real arrival rate: ${realArrivalRate}/min`
                   }
                   </Typography>
                 </Grid>

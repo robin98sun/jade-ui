@@ -137,10 +137,9 @@ const reducer = (state: any = initState, action: any) => {
             fetchedJobs = state.jobs && state.jobs.length ? state.jobs:[]
         } else if (action.type === 'FETCH_JOBS_SUCCEEDED') {
             onscreenData = state.traces ? state.traces.data : null
-            fetchedJobs = action.data
+            fetchedJobs = action.data.sort()
         }
         
-
         traces = Object.assign({}, state.traces, {
             isFetching: false,
             isClearing: false,
@@ -165,17 +164,18 @@ const reducer = (state: any = initState, action: any) => {
         return Object.assign({}, state, {
             traces,
         })
-    case 'DISPATCH_BATCH_JOB_TASK_TRIGGERED':
-        let jobs: string[] = []
-        if (state.jobs && Array.isArray(state.jobs) && state.jobs.length) {
-            jobs = state.jobs
-        }
-        if (jobs.indexOf(action.data.task.jobId)<0) {
-            jobs.push(action.data.task.jobId)
-        }
-        return Object.assign({}, state, {
-            jobs: jobs,
-        })
+    // case 'DISPATCH_BATCH_JOB_TASK_TRIGGERED':
+    //     let jobs: string[] = []
+    //     if (state.jobs && Array.isArray(state.jobs) && state.jobs.length) {
+    //         jobs = state.jobs
+    //     }
+    //     if (jobs.indexOf(action.data.task.jobId)<0) {
+    //         jobs.push(action.data.task.jobId)
+    //         jobs.sort()
+    //     }
+    //     return Object.assign({}, state, {
+    //         jobs: jobs,
+    //     })
     default:
         return state
         // break

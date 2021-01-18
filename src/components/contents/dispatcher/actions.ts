@@ -129,6 +129,7 @@ export interface Timer {
     instance: any, 
     count: number, 
     start: number,
+    end: number,
     iteration: IterationSettings,
 }
 
@@ -210,6 +211,7 @@ export const confirmDispatching=(
             instance: null,
             count: 0,
             start: Date.now(),
+            end: 0,
             iteration: iteration,
         }
         if (iteration.iteration_mode === 'Constant speed') {
@@ -228,10 +230,16 @@ export const confirmDispatching=(
                         timer.on = false
                         if (timer.instance) {
                             clearInterval(timer.instance)
+                            if (timer.end <=0 ) {
+                                timer.end = Date.now()
+                            }
                         }
                     }
                 } else if(timer.instance) {
                     clearInterval(timer.instance)
+                    if (timer.end <=0 ) {
+                        timer.end = Date.now()
+                    }
                 }
             }, interval)
         } else if (iteration.iteration_mode === 'Possion process') {
@@ -250,10 +258,16 @@ export const confirmDispatching=(
                             timer.on = false
                             if (timer.instance) {
                                 clearTimeout(timer.instance)
+                                if (timer.end <=0) {
+                                    timer.end = Date.now()
+                                }
                             }
                         }
                     } else if(timer.instance) {
                         clearTimeout(timer.instance)
+                        if (timer.end <=0) {
+                            timer.end = Date.now()
+                        }
                     }
                 }, nextTime(duration, iteration.arrival_rate))
             }
