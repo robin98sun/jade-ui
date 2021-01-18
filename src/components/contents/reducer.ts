@@ -8,7 +8,7 @@ import DispatcherReducer from './dispatcher/reducer'
 import NodeEditorReducer from './node-editor/reducer'
 import SearchReducer from './search/reducer'
 import ExampleReducer from './dispatcher/reducer'
-import TasksReducer from './tasks/reducer'
+import TracesReducer from './traces/reducer'
 import PodsReducer from './pods/reducer'
 import StatReducer from './stat/reducer'
 import JobsReducer from './jobs/reducer'
@@ -24,7 +24,7 @@ const subReducers = combineReducers({
     editor: NodeEditorReducer,
     search: SearchReducer,
     example: ExampleReducer,
-    tasks: TasksReducer,
+    traces: TracesReducer,
     pods: PodsReducer,
     stat: StatReducer,
     jobs: JobsReducer,

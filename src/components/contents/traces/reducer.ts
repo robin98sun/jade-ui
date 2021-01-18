@@ -15,11 +15,12 @@ export interface Message {
 
 const initState = {
     node: null,
-    tasks: null,
+    traces: null,
+    jobs: [],
 }
 
 const reducer = (state: any = initState, action: any) => {
-    let tasks: any = null
+    let traces: any = null
     switch (action.type) {
     case 'CONNECT_NODE':
         return Object.assign({}, state, {
@@ -29,7 +30,7 @@ const reducer = (state: any = initState, action: any) => {
             }
         })
     case 'CLEAR_TASK_CACHE_TO_CONFIRM':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: false, 
             isFetching: false,
             isConfirming: true,
@@ -37,10 +38,10 @@ const reducer = (state: any = initState, action: any) => {
             error: null,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_TASK_CACHE_CONFIRMED':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: true,
             isFetching: false,
             isConfirming: false,
@@ -48,10 +49,10 @@ const reducer = (state: any = initState, action: any) => {
             error: null,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_TASK_CACHE_CANCELED':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: false,
             isFetching: false,
             isConfirming: false,
@@ -59,10 +60,10 @@ const reducer = (state: any = initState, action: any) => {
             error: null,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_TASK_CACHE_SUCCEEDED':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: false,
             isFetching: false,
             isConfirming: false,
@@ -72,17 +73,17 @@ const reducer = (state: any = initState, action: any) => {
             error: null,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_TASK_CACHE_RESULT_HAS_SHOWN':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             hasShownClearTime: action.data,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_TASK_CACHE_FAILED': 
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: false,
             isFetching: false,
             isConfirming: false,
@@ -91,10 +92,10 @@ const reducer = (state: any = initState, action: any) => {
             errTime: Date.now(),
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'FETCH_TASK_CACHE_FAILED':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isClearing: false,
             isFetching: false,
             isConfirming: false,
@@ -103,17 +104,17 @@ const reducer = (state: any = initState, action: any) => {
             errTime: Date.now(),
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'CLEAR_OR_FETCH_TASK_CACHE_ERROR_HAS_SHOWN': 
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             hasShownErrTime: action.data,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'FETCH_TASK_CACHE_BEGIN':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isFetching: true,
             isClearing: false,
             isConfirming: false,
@@ -121,7 +122,7 @@ const reducer = (state: any = initState, action: any) => {
             clearResponse: null,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'FETCH_TASK_CACHE_SUCCEEDED':
         const taskData: any = action.data
@@ -132,7 +133,7 @@ const reducer = (state: any = initState, action: any) => {
             onscreenData = taskData
         }
 
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             isFetching: false,
             isClearing: false,
             isConfirming: false,
@@ -142,15 +143,19 @@ const reducer = (state: any = initState, action: any) => {
             dataTime: Date.now(),
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
     case 'FETCH_TASK_CACHE_RESULT_HAS_SHOWN':
-        tasks = Object.assign({}, state.tasks, {
+        traces = Object.assign({}, state.traces, {
             hasShownDataTime: action.data,
         })
         return Object.assign({}, state, {
-            tasks,
+            traces,
         })
+    case 'DISPATCH_BATCH_JOB_TASK_TRIGGERED':
+        return {
+            jobs: Array.prototype.push.call([], ...state.jobs, action.data.task.jobId)
+        }
     default:
         return state
         // break

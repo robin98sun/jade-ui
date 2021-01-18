@@ -32,7 +32,7 @@ const reducer = (state: State = initState, action: any) => {
     switch (action.type) {
     case 'DISPATCH_BATCH_JOB_TASK_TRIGGERED':
         const job: Job = {
-            id: action.data.timer.start||0,
+            id: action.data.task.jobId || action.data.timer.start||0,
             timer: action.data.timer,
             iteration: action.data.timer.iteration,
             task: action.data.task,

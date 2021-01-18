@@ -10,7 +10,7 @@ import {
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 
 import { CopyBlock, googlecode } from "react-code-blocks"
-import { Message } from '../tasks/reducer'
+import { Message } from '../traces/reducer'
 import { TreeNode } from '../../gears/tree-view'
 import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
@@ -22,7 +22,7 @@ import {
   hasShownClearCacheOrFetchCacheError,
   hasShownClearCacheResult,
   clearTaskCacheConfirmed,
-} from '../tasks/actions'
+} from '../traces/actions'
 
 import {
   hasShownFetchStatsError,

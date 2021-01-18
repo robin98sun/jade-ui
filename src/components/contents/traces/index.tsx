@@ -17,6 +17,7 @@ import { Message } from './reducer'
 import { TreeNode } from '../../gears/tree-view'
 import ModalStatus from '../../gears/modal-status'
 import ProgressIcon from '../../gears/progress-icon'
+import ObjectEditor from '../../gears/object-editor'
 
 import {
   clearTaskCache,
@@ -24,15 +25,16 @@ import {
   hasShownClearCacheOrFetchCacheError,
   hasShownClearCacheResult,
   clearTaskCacheConfirmed,
-  fetchTaskCache,
+  fetchTraces,
 } from './actions'
 
 interface Props {
   // contentName?: string
   style?: any
   node?: TreeNode
-  tasks?: Message
-  fetchTaskCache?(node: TreeNode): any
+  traces?: Message
+  jobs?: string[]
+  fetchTraces?(node: TreeNode, jobId?: string): any
   clearTaskCacheConfirmed?(node: TreeNode): any
   hasShownClearCacheOrFetchCacheError?(errTime: number): any
   hasShownClearCacheResult?(dataTime: number): any
@@ -40,78 +42,104 @@ interface Props {
   clearTaskCache?():any
 }
 
+interface State {
+  selectedJob: string
+}
 
-class ContentTasks extends Component<Props>{
+class ContentTraces extends Component<Props, State>{
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      selectedJob: 'all',
+    }
+  }
   componentDidMount() {
     console.log('this.props.node:', this.props.node)
-    if (this.props.fetchTaskCache) {
-      this.props.fetchTaskCache(this.props.node||{})
-    }
+    // if (this.props.fetchTraces) {
+      // this.props.fetchTraces(this.props.node||{})
+    // }
   }
   render() {
     const introStyle = Object.assign({}, {}, this.props.style)
+    const jobSelectorSchema = {
+      job: Array.prototype.push.call([], 'all', ...(this.props.jobs||[])),
+    }
+
     return (
       <div className="content-intro" style={introStyle}>
       <ModalStatus
-        open={(this.props.tasks 
-          && (this.props.tasks.isFetching || this.props.tasks.isClearing))
+        open={(this.props.traces 
+          && (this.props.traces.isFetching || this.props.traces.isClearing))
           ||false}
         progressIcon={<ProgressIcon isRunning />}
         message={
-          this.props.tasks && this.props.tasks.isFetching
-          ? 'fetching tasks...'
-          : this.props.tasks && this.props.tasks.isClearing
+          this.props.traces && this.props.traces.isFetching
+          ? 'fetching traces...'
+          : this.props.traces && this.props.traces.isClearing
           ? 'clearing...'
           : 'loading...'
         }
       />
       <ModalStatus
-        open={(this.props.tasks && this.props.tasks.error 
-          && this.props.tasks.errTime
-          && this.props.tasks.errTime !== this.props.tasks.hasShownErrTime)||false}
+        open={(this.props.traces && this.props.traces.error 
+          && this.props.traces.errTime
+          && this.props.traces.errTime !== this.props.traces.hasShownErrTime)||false}
         title="ERROR"
         message={
-          (this.props.tasks 
-          ? this.props.tasks.error
+          (this.props.traces 
+          ? this.props.traces.error
           : null) || 'unknown error'
         }
         onClose={()=>{
-          if (this.props.tasks && this.props.hasShownClearCacheOrFetchCacheError) {
-             this.props.hasShownClearCacheOrFetchCacheError(this.props.tasks.errTime||0) 
+          if (this.props.traces && this.props.hasShownClearCacheOrFetchCacheError) {
+             this.props.hasShownClearCacheOrFetchCacheError(this.props.traces.errTime||0) 
           }
         }}
       />
       <ModalStatus
-        open={(this.props.tasks && this.props.tasks.clearResponse && this.props.tasks.clearTime
-          && this.props.tasks.clearTime !== this.props.tasks.hasShownClearTime)||false}
+        open={(this.props.traces && this.props.traces.clearResponse && this.props.traces.clearTime
+          && this.props.traces.clearTime !== this.props.traces.hasShownClearTime)||false}
         title="Result of clearing"
         message={
-          this.props.tasks 
-          ? JSON.stringify(this.props.tasks.clearResponse, null, 4)
+          this.props.traces 
+          ? JSON.stringify(this.props.traces.clearResponse, null, 4)
           : 'unknown response'
         }
         onClose={()=>{
-          if (this.props.tasks && this.props.hasShownClearCacheResult) {
-             this.props.hasShownClearCacheResult(this.props.tasks.clearTime||0) 
+          if (this.props.traces && this.props.hasShownClearCacheResult) {
+             this.props.hasShownClearCacheResult(this.props.traces.clearTime||0) 
           }
         }}
       />
       <ModalStatus
-        open={(this.props.tasks && this.props.tasks.isConfirming)||false}
+        open={(this.props.traces && this.props.traces.isConfirming)||false}
         title="ATTENTION"
         message="Are you going to clear the task cache and stat data on this node?"
         onClose={()=>{
-          if (this.props.tasks && this.props.clearTaskCacheCanceled) {
+          if (this.props.traces && this.props.clearTaskCacheCanceled) {
              this.props.clearTaskCacheCanceled() 
           }
         }}
         onConfirm={()=>{
-          if (this.props.tasks && this.props.clearTaskCacheConfirmed) {
+          if (this.props.traces && this.props.clearTaskCacheConfirmed) {
              this.props.clearTaskCacheConfirmed(this.props.node||{}) 
           }
         }}
       />
       <Grid container>
+        <Grid item xs >
+          <ObjectEditor
+            schema={jobSelectorSchema}
+            object={{job: this.state.selectedJob}}
+            inputMode
+            subtitle="jobs to fetch"
+            onChange={(newObj:any)=>{
+              this.setState({
+                selectedJob: newObj.job,
+              })
+            }}
+          />
+        </Grid>
         <Grid item sm={5} xs={12}>
           <Button
             variant="contained"
@@ -119,15 +147,15 @@ class ContentTasks extends Component<Props>{
             style={{
             }}
             onClick={()=> {
-              if (this.props.fetchTaskCache) {
-                this.props.fetchTaskCache(this.props.node||{})
+              if (this.props.fetchTraces) {
+                this.props.fetchTraces(this.props.node||{}, this.state.selectedJob === 'all'?undefined:this.state.selectedJob)
               }
             }}
           >
             <AutorenewIcon style={{
               marginRight: 20}}
             /> 
-            Refresh
+            Fetch Traces
           </Button>
         </Grid>
         <Grid item sm={1} xs={12}>
@@ -157,13 +185,13 @@ class ContentTasks extends Component<Props>{
       </Grid>
 
       {
-        this.props.tasks && this.props.tasks.data
-        ? <Fade in={this.props.tasks !== undefined && this.props.tasks.data !== undefined} timeout={1500}>
+        this.props.traces && this.props.traces.data
+        ? <Fade in={this.props.traces !== undefined && this.props.traces.data !== undefined} timeout={1500}>
           <Grid container>
             <Grid item xs={12}>
             <Paper>
               <CopyBlock
-                text={JSON.stringify(this.props.tasks.data||{}, null, 4)}
+                text={JSON.stringify(this.props.traces.data||{}, null, 4)}
                 language="json"
                 showLineNumbers
                 theme={googlecode}
@@ -182,13 +210,13 @@ class ContentTasks extends Component<Props>{
 }
 
 export default connect(
-  (state: any)=>state.app.content.tasks||{},
+  (state: any)=>state.app.content.traces||{},
   {
     clearTaskCache,
     clearTaskCacheCanceled,
     hasShownClearCacheOrFetchCacheError,
     hasShownClearCacheResult,
     clearTaskCacheConfirmed,
-    fetchTaskCache,
+    fetchTraces,
   },
-)(ContentTasks);
+)(ContentTraces);

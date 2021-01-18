@@ -26,6 +26,7 @@ export interface IterationSettings {
 export const dispatchTask = (
                 node: any, 
                 task: Task, 
+                jobId: string|undefined,
               ) => async(dispatch: any) => {
     if (!node || !node.attributes || !node.attributes.token 
         ||!task || !task.application || !task.budget 
@@ -50,6 +51,7 @@ export const dispatchTask = (
         budget.fanoutTable.unshift(0)
     }
     const taskInst: any = {
+        jobId: jobId,
         token: node!.attributes!.token,
         payload: [{
             task: {
@@ -109,7 +111,9 @@ export const dispatchTask = (
             estimatedMeanServiceTime: task.options.estimatedMeanServiceTime,
         }
     }
-    console.log('task options:', task.options, taskInst.payload[0].options)
+    if (jobId) {
+        taskInst.payload[0].task.jobId = jobId
+    }
     dispatch({
         type: 'DISPATCH_TASK_TO_CONFIRM',
         data: taskInst,

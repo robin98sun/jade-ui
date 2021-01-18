@@ -54,7 +54,7 @@ export const clearTaskCacheConfirmed = (node: TreeNode) => async(dispatch: any) 
     }
 }
 
-export const fetchTaskCache = (node: TreeNode) => async(dispatch: any) => {
+export const fetchTraces = (node: TreeNode, jobId: string|undefined) => async(dispatch: any) => {
     dispatch({
         type: 'FETCH_TASK_CACHE_BEGIN',
     })
@@ -62,11 +62,15 @@ export const fetchTaskCache = (node: TreeNode) => async(dispatch: any) => {
     try {
         const baseUrl = node && node.name ? node.name : ''
         const url = `${baseUrl}/$jade$/debug/collectTraces`
-        const res = await fetch(url, {
-            method: 'GET',
+        const options:any = {
+            method: 'POST',
             headers: {'Content-Type': 'application/json'},
             cache: 'no-cache',
-        })
+        }
+        if (jobId) {
+            options.body = JSON.stringify({jobId: jobId})
+        }
+        const res = await fetch(url, options)
 
         if (res.status !== 200 ) {
             throw Error(`${res.status}: ${res.statusText}`)

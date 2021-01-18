@@ -10,7 +10,7 @@ import ContentTopo from './topo'
 import ContentDispatcher from './dispatcher'
 import ContentSearch from './search'
 import ContentExample from './example'
-import ContentTasks from './tasks'
+import ContentTraces from './traces'
 import ContentPods from './pods'
 import ContentStat from './stat'
 import ContentJobs from './jobs'
@@ -43,7 +43,7 @@ class Contents extends Component<Props>{
     case 'example':
       return <ContentExample />
     case 'showTasks': 
-      return <ContentTasks />
+      return <ContentTraces />
     case 'showPods': 
       return <ContentPods />
     case 'showStat':

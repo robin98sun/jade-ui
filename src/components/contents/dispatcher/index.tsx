@@ -47,8 +47,8 @@ const iterationSettingsSchema = {
 
 const initIterationSettings:IterationSettings = {
   iteration_mode: 'Possion process',
-  arrival_rate: 120,
-  duration: 30,
+  arrival_rate: 20,
+  duration: 10,
   time_unit: 'minute',
 }
 
@@ -57,7 +57,7 @@ export interface Props {
   node?: TreeNode
   cancelDispatching?():any,
   confirmDispatching?(node: TreeNode, taskInst: any, iteration?: typeof initIterationSettings):any,
-  dispatchTask?(node: any, task: Task):any
+  dispatchTask?(node: any, task: Task, jobId: string):any
   dismissErrMsg?(errTime: number):any
   dismissDispatchingResult?(dataTime: number):any
   connectNode?(addr:string, port: number, token: string, targetPage: string, slientFaile: boolean):any
@@ -284,7 +284,8 @@ class ContentDispatcher extends Component<Props, State>{
               aggregator: resultState.aggregatorResources,
               worker: resultState.workerResources,
             },
-          }
+          },
+          `WEB:${this.props.node?.name}:${Date.now()}`,
         )
       } 
     }
@@ -321,7 +322,7 @@ class ContentDispatcher extends Component<Props, State>{
                 buttonTitle="Dispatch Task"
                 fullWidth
                 variant="contained"
-                menuItems={["Dispatch Once", "Iteratively"]}
+                menuItems={["Once", "Iteratively"]}
                 icon={<SendOutlinedIcon style={{marginRight: 10}}/>}
                 onSelected={(item:string)=>{
                   if (item === 'Iteratively') {
