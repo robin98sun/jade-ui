@@ -34,12 +34,12 @@ export const plankton = (to: TemplateOptions):Task => {
             fanoutTable:[0,100, 300, 600, 1200, 1800, 2400, 3600]
         }, 
         aggregator: {
-            image: `${to.registry}/plankton:${latestVersion.version}-amd64`,
+            image: `${to.registry}/plankton:${latestVersion.version}`,
             port: 8080,
             input: {},
         }, 
         worker: {
-            image: `${to.registry}/plankton:${latestVersion.version}-${to.registry === 'robin98'?'arm32':'amd64'}`,
+            image: `${to.registry}/plankton:${latestVersion.version}`,
             port: 8080,
             input: to.cmd && to.cmd !== 'none' ? {
                 "cmd": to.cmd,
