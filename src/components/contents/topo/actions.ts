@@ -40,10 +40,10 @@ const fetchNode = async (protocol: string, addr: string, port: number, token: st
         const node = msg[nodeName]
         try{
             root.subnodes[nodeName] = await fetchNode(node.protocol, node.address, node.port, node.token) 
-            console.log("successfully accessed ["+count+"] "+nodeName+", addr: "+node.address+":"+node.port)
+            console.log("successfully accessed ["+count+"] "+nodeName)
         }catch(e) {
-            console.error("ERROR when fetching subnode for "+nodeName, "error:", e)
-            throw e
+            console.log("ERROR when fetching subnode for "+nodeName)
+            // throw e
         }
         count++
         
