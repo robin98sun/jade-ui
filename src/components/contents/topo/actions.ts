@@ -32,12 +32,21 @@ const fetchNode = async (protocol: string, addr: string, port: number, token: st
         },
         unfolded: true,
     }
+    let count = 0
     for (let nodeName of Object.keys(msg)) {
         if (!root.subnodes) {
             root.subnodes = {}
         }
         const node = msg[nodeName]
-        root.subnodes[nodeName] = await fetchNode(node.protocol, node.address, node.port, node.token)
+        try{
+            root.subnodes[nodeName] = await fetchNode(node.protocol, node.address, node.port, node.token) 
+            console.log("successfully accessed ["+count+"] "+nodeName+", addr: "+node.address+":"+node.port)
+        }catch(e) {
+            console.error("ERROR when fetching subnode for "+nodeName, "error:", e)
+            throw e
+        }
+        count++
+        
     }
     return root
 }
