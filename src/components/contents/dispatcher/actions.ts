@@ -181,7 +181,7 @@ const dispatchTaskInst = async (
                     }
                   : taskInst,
         })
-    } catch (e) {
+    } catch (e: any) {
         console.error('ERROR when dispatching task:', node, e)
         dispatch({
             type: `${actionName}_FAILED`,

@@ -43,7 +43,7 @@ export const connectNode = (addr:string, port: number, token: string, targetPage
         if (targetPage) {
             dispatch(switchContent(targetPage))
         }
-    } catch (e) {
+    } catch (e:any) {
         console.error(`Error when connecting to [http:${addr}:${port}] using token [${token}]:`, e)
         if (!slientFaile) {
             dispatch({

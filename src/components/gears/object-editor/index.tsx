@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react'
-import { withTheme, WithStyles, createStyles, withStyles } from '@material-ui/core/styles'
-
+import { withTheme, createStyles, withStyles } from '@material-ui/core/styles'
+import { WithStyles } from '@material-ui/core'
 import {
   Card,
   CardHeader,
